@@ -1,0 +1,12 @@
+#ifndef SIMULATION_GLOBAL_H
+#define SIMULATION_GLOBAL_H
+
+#include <QtCore/qglobal.h>
+
+#if defined(SIMULATION_LIBRARY)
+#  define SIMULATIONSHARED_EXPORT Q_DECL_EXPORT
+#else
+#  define SIMULATIONSHARED_EXPORT Q_DECL_IMPORT
+#endif
+
+#endif // SIMULATION_GLOBAL_H
