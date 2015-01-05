@@ -32,3 +32,10 @@ unix:{
     # add your own with quoting gyrations to make sure $ORIGIN gets to the command line unexpanded
     QMAKE_LFLAGS += "-Wl,-rpath,\'\$$ORIGIN\'"
 }
+
+win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../Simulation/release/ -lSimulation
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../Simulation/debug/ -lSimulation
+else:unix: LIBS += -L$$OUT_PWD/../Simulation/ -lSimulation
+
+INCLUDEPATH += $$PWD/../Simulation
+DEPENDPATH += $$PWD/../Simulation
