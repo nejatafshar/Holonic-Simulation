@@ -13,10 +13,12 @@ DEFINES += SIMULATION_LIBRARY
 
 SOURCES += \
     simulation.cpp \
+    agent.cpp
 
 HEADERS += \
     Simulation_global.h \
     simulation.h \
+    agent.h
 
 unix:!symbian {
     maemo5 {
