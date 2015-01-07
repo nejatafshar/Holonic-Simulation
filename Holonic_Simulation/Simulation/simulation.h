@@ -7,6 +7,8 @@
 
 #include <QWidget>
 
+#include "agent.h"
+
 
 namespace Ui {
 class Simulation;
@@ -21,18 +23,25 @@ public:
     ~Simulation();
 
 
-signals:
 
 
 
-public slots:
 
 private slots:
+    void on_startBut_clicked();
+
+private:
+
+    void initializeHolarchy(int levels, int holons);
+
+    void initializeHolon(Agent* parent, int holons, int level, int maxLevel);
 
 
 
 private:
      Ui::Simulation *ui;
+
+     Agent * root;
 
 
 
