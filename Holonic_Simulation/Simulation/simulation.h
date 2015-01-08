@@ -30,6 +30,8 @@ public:
 private slots:
     void on_startBut_clicked();
 
+    void updateTotalHolons();
+
 private:
 
     void initializeHolarchy(int levels, int holons);

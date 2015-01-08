@@ -5,6 +5,8 @@
 
 #include <QLabel>
 
+#include <QtMath>
+
 
 Simulation::Simulation(QWidget *parent) :
     QWidget(parent),
@@ -14,6 +16,11 @@ Simulation::Simulation(QWidget *parent) :
     ui->setupUi(this);
 
     root = NULL;
+
+    connect(ui->levels_lineEdit,&QLineEdit::textChanged, this, &Simulation::updateTotalHolons);
+    connect(ui->holons_lineEdit,&QLineEdit::textChanged, this, &Simulation::updateTotalHolons);
+
+    updateTotalHolons();
 
 
 }
@@ -58,4 +65,11 @@ void Simulation::on_startBut_clicked()
     initializeHolarchy(levels, holons);
 
     root->start();
+}
+
+void Simulation::updateTotalHolons()
+{
+    int holons = ui->holons_lineEdit->text().toInt();
+    int levels = ui->levels_lineEdit->text().toInt();
+    ui->totalHolons_lineEdit->setText(QString("%1").arg(qPow(holons, levels)));
 }
