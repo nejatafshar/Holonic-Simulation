@@ -10,14 +10,15 @@
 class Agent : public QObject
 {
     Q_OBJECT
+
 public:
-    explicit Agent(QObject *parent = 0);
+    explicit Agent(QObject *m_parent = 0);
     ~Agent();
 
 signals:
 
     void suggestParent(QVector<ushort> resources);
-    bool suggestSibling(int targetIndex, QVector<ushort> resources);
+    bool suggestSibling(int targetHolonIndex, QVector<ushort> givingResources, QVector<ushort> gettingResources);
 
 
 public slots:
@@ -29,9 +30,15 @@ private slots:
 
     void receiveSuggestFromChild(QVector<ushort> resources);
 
-    bool mapChildrenSuggestions(int targetIndex, QVector<ushort> resources);
+    bool mapChildrenSuggestions(int targetHolonIndex,  QVector<ushort> givingResources, QVector<ushort> gettingResources);
 
 public :
+
+    QVector<bool>  permissions() const;
+    QList<Agent *> children() const;
+
+    int holonIndex() const;
+    void setHolonIndex(int holonIndex);
 
     void addChild(Agent * agent);
 
@@ -41,20 +48,21 @@ public :
     void sendResultToChildren(bool finished);
     void interactWithSiblings();
 
-    bool receiveSuggestFromSibling(QVector<ushort> resources);
+    bool receiveSuggestFromSibling(  QVector<ushort> givingResources, QVector<ushort> gettingResources);
+
 
 private:
 
-    int HolonIndex;
+    int m_holonIndex;
 
-    QList<Agent *> childs;
-    Agent * parent;
+    QList<Agent *> m_children;
+    Agent * m_parent;
 
-    QVector<ushort> resources;
-    QVector<ushort> thresholds;
-    QVector<bool> permissions;
+    QVector<bool> m_permissions;
+    QVector<ushort> m_resources;
+    QVector<ushort> m_thresholds;
 
-    int receivedSuggestionsFromChilds;
+    int m_receivedSuggestionsFromChilds;
 
 };
 
