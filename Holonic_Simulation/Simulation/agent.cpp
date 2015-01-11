@@ -80,11 +80,6 @@ void Agent::receiveSuggestFromChild(QVector<ushort> resources)
     }
 }
 
-bool Agent::receiveSuggestFromSibling(QVector<ushort> givingResources, QVector<ushort> gettingResources)
-{
-
-    return false;
-}
 int Agent::holonIndex() const
 {
     return m_holonIndex;
@@ -187,29 +182,63 @@ void Agent::interactWithSiblings()
 
             if(ret)
             {
-                m_resources[gettingIndex]-=exchangeAmount;
-                int diff=1;
-                while(true)
-                {
-                    if((gettingIndex+diff)<ResourceElements && m_permissions[gettingIndex+diff])
-                    {
-                        m_resources[gettingIndex+diff]+=exchangeAmount;
-                        break;
-                    }
-                    else if((gettingIndex-diff)>=0 && m_permissions[gettingIndex-diff])
-                    {
-                        m_resources[gettingIndex-diff]+=exchangeAmount;
-                        break;
-                    }
-                    else if((gettingIndex+diff)>=ResourceElements && (gettingIndex-diff)<0)
-                    {
-                        m_resources[0]+=exchangeAmount;
-                        break;
-                    }
-                    diff++;
-                }
+                shiftResource(givingIndex, exchangeAmount);
             }
         }
+    }
+}
+
+bool Agent::receiveSuggestFromSibling(QVector<ushort> givingResources, QVector<ushort> gettingResources)
+{
+    int givingIndex=-1;
+    int gettingIndex=-1;
+    ushort exchangeAmount;
+    for(int i=0; i<ResourceElements;i++)
+    {
+        if(givingResources[i]>0)
+            givingIndex = i;
+        else if(gettingResources[i]>0)
+        {
+            gettingIndex = i;
+            exchangeAmount = gettingResources[i];
+        }
+    }
+
+    if(givingIndex>=0 && gettingIndex>=0)
+    {
+        //decide
+
+        shiftResource(gettingIndex, exchangeAmount);
+
+        return true;
+
+    }
+
+    return false;
+}
+
+void Agent::shiftResource(int givingIndex, ushort exchangeAmount)
+{
+    m_resources[givingIndex]-= exchangeAmount;
+    int diff=1;
+    while(true)
+    {
+        if((givingIndex+diff)<ResourceElements && m_permissions[givingIndex+diff])
+        {
+            m_resources[givingIndex+diff]+=exchangeAmount;
+            break;
+        }
+        else if((givingIndex-diff)>=0 && m_permissions[givingIndex-diff])
+        {
+            m_resources[givingIndex-diff]+=exchangeAmount;
+            break;
+        }
+        else if((givingIndex+diff)>=ResourceElements && (givingIndex-diff)<0)
+        {
+            m_resources[0]+=exchangeAmount;
+            break;
+        }
+        diff++;
     }
 }
 

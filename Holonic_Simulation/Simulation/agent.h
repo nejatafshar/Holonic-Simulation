@@ -48,10 +48,12 @@ public :
     void sendResultToChildren(bool finished);
     void interactWithSiblings();
 
-    bool receiveSuggestFromSibling(  QVector<ushort> givingResources, QVector<ushort> gettingResources);
+    bool receiveSuggestFromSibling(QVector<ushort> givingResources, QVector<ushort> gettingResources);
 
 
 private:
+
+    void shiftResource(int givingIndex, ushort exchangeAmount);
 
     int m_holonIndex;
 
