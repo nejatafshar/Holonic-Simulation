@@ -139,6 +139,9 @@ void Agent::sendResultToChildren(bool finished)
             agent->interactWithSiblings();
         }
     }
+    else if(m_parent==NULL)
+        emit simulationFinished();
+
 
     //Invoke children methods
     foreach(Agent * agent, m_children)

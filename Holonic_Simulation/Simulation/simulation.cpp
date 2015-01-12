@@ -38,6 +38,8 @@ void Simulation::initializeHolarchy(int levels, int holons)
 
     root = new Agent(NULL);
 
+    connect(root, &Agent::simulationFinished, this, &Simulation::onSimulationFinished);
+
     initializeHolon(root, holons, 0, levels);
 }
 
@@ -64,6 +66,8 @@ void Simulation::on_startBut_clicked()
 
     initializeHolarchy(levels, holons);
 
+    elapsedTimer.start();
+
     root->start();
 }
 
@@ -72,4 +76,11 @@ void Simulation::updateTotalHolons()
     int holons = ui->holons_lineEdit->text().toInt();
     int levels = ui->levels_lineEdit->text().toInt();
     ui->totalHolons_lineEdit->setText(QString("%1").arg(qPow(holons, levels)));
+}
+
+void Simulation::onSimulationFinished()
+{
+    qint64 elapsed = elapsedTimer.nsecsElapsed();
+
+    ui->simulationTime_lineEdit->setText(QString::number(elapsed/1e9, 'f', 4));
 }

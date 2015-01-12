@@ -19,6 +19,7 @@ signals:
 
     void suggestParent(QVector<ushort> resources);
     bool suggestSibling(int targetHolonIndex, QVector<ushort> givingResources, QVector<ushort> gettingResources);
+    void simulationFinished();
 
 
 public slots:

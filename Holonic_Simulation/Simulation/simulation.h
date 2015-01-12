@@ -9,6 +9,8 @@
 
 #include "agent.h"
 
+#include <QElapsedTimer>
+
 
 namespace Ui {
 class Simulation;
@@ -32,6 +34,8 @@ private slots:
 
     void updateTotalHolons();
 
+    void onSimulationFinished();
+
 private:
 
     void initializeHolarchy(int levels, int holons);
@@ -46,6 +50,7 @@ private:
      Agent * root;
 
 
+     QElapsedTimer elapsedTimer;
 
 };
 
