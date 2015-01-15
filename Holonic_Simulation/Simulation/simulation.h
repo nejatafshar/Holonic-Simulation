@@ -4,12 +4,12 @@
 #include "Simulation_global.h"
 
 #include <QObject>
-
 #include <QWidget>
+#include <QVector>
+#include <QElapsedTimer>
 
 #include "agent.h"
-
-#include <QElapsedTimer>
+#include "statistics.h"
 
 
 namespace Ui {
@@ -51,6 +51,14 @@ private:
 
 
      QElapsedTimer elapsedTimer;
+
+     Statistics statistics;
+
+     QVector<ushort> meanResources;
+     double resourceStandardDeviation;
+
+     QVector<ushort> meanPriorities;
+     double priorityStandardDeviation;
 
 };
 

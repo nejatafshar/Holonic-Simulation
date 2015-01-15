@@ -23,7 +23,10 @@ Simulation::Simulation(QWidget *parent) :
     ui->maxCycles_lineEdit->setText(settings.value("SimulationSettings/maxCycles","10").toString());
     ui->desiredVariance_lineEdit->setText(settings.value("SimulationSettings/desiredVariance","1").toString());
     ui->agentNeeds_lineEdit->setText(settings.value("SimulationSettings/agentNeeds","10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10").toString());
-    ui->standardDeviation_lineEdit->setText(settings.value("SimulationSettings/standardDeviation","10").toString());
+    ui->resourceStandardDeviation_lineEdit->setText(settings.value("SimulationSettings/standardDeviation","2").toString());
+    ui->priorities_lineEdit->setText(settings.value("SimulationSettings/priorities","50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50").toString());
+    ui->prioritiesStandardDeviation_lineEdit->setText(settings.value("SimulationSettings/prioritiesStandardDeviation","2").toString());
+
 
     root = NULL;
 
@@ -43,7 +46,9 @@ Simulation::~Simulation()
     settings.setValue("SimulationSettings/maxCycles",ui->maxCycles_lineEdit->text());
     settings.setValue("SimulationSettings/desiredVariance",ui->desiredVariance_lineEdit->text());
     settings.setValue("SimulationSettings/agentNeeds",ui->agentNeeds_lineEdit->text());
-    settings.setValue("SimulationSettings/standardDeviation",ui->standardDeviation_lineEdit->text());
+    settings.setValue("SimulationSettings/standardDeviation",ui->resourceStandardDeviation_lineEdit->text());
+    settings.setValue("SimulationSettings/priorities",ui->priorities_lineEdit->text());
+    settings.setValue("SimulationSettings/prioritiesStandardDeviation",ui->prioritiesStandardDeviation_lineEdit->text());
 
     delete ui;
 }
@@ -59,6 +64,24 @@ void Simulation::initializeHolarchy(int levels, int holons)
 
     connect(root, &Agent::simulationFinished, this, &Simulation::onSimulationFinished);
 
+    //Initialize variables
+    meanResources.clear();
+    QStringList list1 = ui->agentNeeds_lineEdit->text().split(",");
+    foreach(QString item, list1)
+    {
+        meanResources.append(item.toUShort());
+    }
+    resourceStandardDeviation = ui->resourceStandardDeviation_lineEdit->text().toDouble();
+
+    meanPriorities.clear();
+    QStringList list2 = ui->priorities_lineEdit->text().split(",");
+    foreach(QString item, list2)
+    {
+        meanPriorities.append(item.toUShort());
+    }
+    priorityStandardDeviation = ui->prioritiesStandardDeviation_lineEdit->text().toDouble();
+
+    //Make Holarchy
     initializeHolon(root, holons, 0, levels);
 }
 
@@ -73,6 +96,23 @@ void Simulation::initializeHolon(Agent* parent, int holons, int level, int maxLe
     for(int i=0;i<holons;i++)
     {
         Agent * agent = new Agent(parent);
+
+        QVector<ushort> resources;
+        QVector<ushort> priorities;
+        resources.resize(ResourceElements);
+
+        for(int i=0; i<ResourceElements; i++)
+        {
+            double val;
+            statistics.gaussianRandomGererator(meanResources[i], resourceStandardDeviation, 1, &val);
+            resources[i] = (ushort)val;
+            statistics.gaussianRandomGererator(meanPriorities[i], priorityStandardDeviation, 1, &val);
+            priorities[i] = (ushort)val;
+        }
+
+        agent->setResources(resources);
+        agent->setPriorities(priorities);
+
         parent->addChild(agent);
         initializeHolon(agent, holons, level, maxLevels);
     }
