@@ -7,6 +7,8 @@
 
 #include <QtMath>
 
+#include <QSettings>
+
 
 Simulation::Simulation(QWidget *parent) :
     QWidget(parent),
@@ -14,6 +16,14 @@ Simulation::Simulation(QWidget *parent) :
 {
 
     ui->setupUi(this);
+
+    QSettings settings;
+    ui->levels_lineEdit->setText(settings.value("SimulationSettings/levels","3").toString());
+    ui->holons_lineEdit->setText(settings.value("SimulationSettings/holons","5").toString());
+    ui->maxCycles_lineEdit->setText(settings.value("SimulationSettings/maxCycles","10").toString());
+    ui->desiredVariance_lineEdit->setText(settings.value("SimulationSettings/desiredVariance","1").toString());
+    ui->agentNeeds_lineEdit->setText(settings.value("SimulationSettings/agentNeeds","10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10").toString());
+    ui->standardDeviation_lineEdit->setText(settings.value("SimulationSettings/standardDeviation","10").toString());
 
     root = NULL;
 
@@ -27,8 +37,15 @@ Simulation::Simulation(QWidget *parent) :
 
 Simulation::~Simulation()
 {
-    delete ui;
+    QSettings settings;
+    settings.setValue("SimulationSettings/levels",ui->levels_lineEdit->text());
+    settings.setValue("SimulationSettings/holons",ui->holons_lineEdit->text());
+    settings.setValue("SimulationSettings/maxCycles",ui->maxCycles_lineEdit->text());
+    settings.setValue("SimulationSettings/desiredVariance",ui->desiredVariance_lineEdit->text());
+    settings.setValue("SimulationSettings/agentNeeds",ui->agentNeeds_lineEdit->text());
+    settings.setValue("SimulationSettings/standardDeviation",ui->standardDeviation_lineEdit->text());
 
+    delete ui;
 }
 
 void Simulation::initializeHolarchy(int levels, int holons)
