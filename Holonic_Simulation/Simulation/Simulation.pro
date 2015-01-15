@@ -6,6 +6,8 @@
 
 QT       += widgets
 
+CONFIG += c++11
+
 TARGET = Simulation
 TEMPLATE = lib
 
@@ -13,12 +15,14 @@ DEFINES += SIMULATION_LIBRARY
 
 SOURCES += \
     simulation.cpp \
-    agent.cpp
+    agent.cpp \
+    statistics.cpp
 
 HEADERS += \
     Simulation_global.h \
     simulation.h \
-    agent.h
+    agent.h \
+    statistics.h
 
 unix:!symbian {
     maemo5 {

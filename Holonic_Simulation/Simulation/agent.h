@@ -52,6 +52,15 @@ public :
     bool receiveSuggestFromSibling(QVector<ushort> givingResources, QVector<ushort> gettingResources);
 
 
+    //Setters & Getters
+
+    int maxFutileCycles() const;
+    void setMaxFutileCycles(int value);
+
+    double desiredVariance() const;
+    void setDesiredVariance(double desiredVariance);
+
+
 private:
 
     void shiftResource(int givingIndex, ushort exchangeAmount);
@@ -66,6 +75,9 @@ private:
     QVector<ushort> m_thresholds;
 
     int m_receivedSuggestionsFromChilds;
+
+    int m_maxFutileCycles;
+    double m_desiredVariance;
 
 };
 

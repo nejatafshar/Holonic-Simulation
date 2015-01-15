@@ -37,6 +37,8 @@ void Simulation::initializeHolarchy(int levels, int holons)
         root->deleteLater();
 
     root = new Agent(NULL);
+    root->setMaxFutileCycles(ui->maxCycles_lineEdit->text().toInt());
+    root->setDesiredVariance(ui->desiredVariance_lineEdit->text().toDouble());
 
     connect(root, &Agent::simulationFinished, this, &Simulation::onSimulationFinished);
 

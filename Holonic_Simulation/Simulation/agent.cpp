@@ -10,6 +10,9 @@ Agent::Agent(QObject *parent) : QObject(parent)
 
     m_receivedSuggestionsFromChilds =0;
 
+    m_maxFutileCycles = 0;
+    m_desiredVariance = 0;
+
 
 }
 
@@ -244,11 +247,32 @@ void Agent::shiftResource(int givingIndex, ushort exchangeAmount)
         diff++;
     }
 }
+int Agent::maxFutileCycles() const
+{
+    return m_maxFutileCycles;
+}
+
+void Agent::setMaxFutileCycles(int value)
+{
+    m_maxFutileCycles = value;
+}
+
+double Agent::desiredVariance() const
+{
+    return m_desiredVariance;
+}
+
+void Agent::setDesiredVariance(double desiredVariance)
+{
+    m_desiredVariance = desiredVariance;
+}
+
 
 bool Agent::mapChildrenSuggestions(int targetIndex,  QVector<ushort> givingResources, QVector<ushort> gettingResources)
 {
     //int sourceIndex = qobject_cast<Agent *>(sender())->HolonIndex;
     return m_children[targetIndex]->receiveSuggestFromSibling(givingResources, gettingResources);
 }
+
 
 
