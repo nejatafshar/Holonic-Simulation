@@ -4,9 +4,7 @@ Agent::Agent(QObject *parent) : QObject(parent)
 {
     m_parent = qobject_cast<Agent *>(parent);
 
-    m_resources.resize(ResourceElements);
-    m_thresholds.resize(ResourceElements);
-    m_permissions.resize(ResourceElements);
+    m_prices.resize(ResourceElements);
 
     m_receivedSuggestionsFromChilds =0;
 
@@ -26,7 +24,7 @@ Agent::~Agent()
 
 void Agent::addChild(Agent *agent)
 {
-    agent->setHolonIndex(m_children.count()+1);
+    agent->setHolonIndex(m_children.count());
 
     connect(agent, &Agent::suggestParent, this, &Agent::receiveSuggestFromChild);
     connect(agent, &Agent::suggestSibling, this, &Agent::mapChildrenSuggestions);
@@ -37,11 +35,6 @@ void Agent::addChild(Agent *agent)
 QList<Agent *> Agent::children() const
 {
     return m_children;
-}
-
-QVector<bool> Agent::permissions() const
-{
-    return m_permissions;
 }
 
 void Agent::start()
@@ -69,7 +62,15 @@ void Agent::receiveSuggestFromChild(QVector<ushort> resources)
     {
         if(m_parent==NULL) // This is root
         {
-            sendResultToChildren(false);
+            bool isFinished = false;
+
+            //
+
+            if(isFinished)
+                emit simulationFinished();
+
+            sendResultToChildren(isFinished);
+
         }
         else // This is an intermediate holon
         {
@@ -94,11 +95,9 @@ void Agent::setHolonIndex(int holonIndex)
 }
 
 
-void Agent::receiveResultFromParent(QVector<bool> permissions, QVector<ushort> thresholds)
+void Agent::receiveResultFromParent(QVector<double> prices)
 {
-
-    m_permissions = permissions;
-    m_thresholds = thresholds;
+    m_prices = prices;
 }
 
 void Agent::sendResultToChildren(bool finished)
@@ -112,44 +111,29 @@ void Agent::sendResultToChildren(bool finished)
     }
 
     //Sending results to children
-    QVector<ushort> meanThresholds;
-    meanThresholds.resize(ResourceElements);
-    for(int i=0;i< ResourceElements; i++)
-    {
-        meanThresholds[i] = m_thresholds[i] / m_children.count();
-    }
 
-    bool isFinished = true;
+    //Deciding About prices
+    //...
+
     foreach(Agent * agent, m_children)
     {
-        for(int i=0;i< ResourceElements; i++)
-        {
-            if(agent->m_resources[i]<=meanThresholds[i])
-                m_permissions[i] = true;
-            else
-                isFinished = m_permissions[i] = false;
-        }
-
-
-        agent->receiveResultFromParent(m_permissions, meanThresholds);
+        agent->receiveResultFromParent(m_prices);
     }
 
     //Interaction
-    if(!isFinished)
+    if(!finished)
     {
         foreach(Agent * agent, m_children)
         {
             agent->interactWithSiblings();
         }
     }
-    else if(m_parent==NULL)
-        emit simulationFinished();
 
 
     //Invoke children methods
     foreach(Agent * agent, m_children)
     {
-        agent->sendResultToChildren(isFinished);
+        agent->sendResultToChildren(finished);
     }
 
 
@@ -157,24 +141,21 @@ void Agent::sendResultToChildren(bool finished)
 
 void Agent::interactWithSiblings()
 {
+    QVector<ushort>::iterator it = std::max_element(m_resources.begin(), m_resources.end());
+    ushort max = *it;
+
     foreach(Agent * agent, m_parent->children())
     {
-        int givingIndex=-1;
-        int gettingIndex=-1;
-        QVector<bool> agentPermissions = agent->permissions();
-        for(int i=0; i<ResourceElements;i++)
-        {
-            if(m_permissions[i]==false && agentPermissions[i]==true)
-                gettingIndex = i;
-            else if(m_permissions[i]==true && agentPermissions[i]==false)
-                givingIndex = i;
+        QVector<ushort> agentResources = agent->resources();
+        QVector<ushort>::iterator it = std::max_element(agentResources.begin(), agentResources.end());
+        ushort agentMax = *it;
 
-            if(givingIndex>=0 && gettingIndex>=0)
-                break;
-
-        }
-        if(givingIndex>=0 && gettingIndex>=0)
+        // Decide about interaction
+        if(false)
         {
+            int givingIndex = m_resources.indexOf(max);
+            int gettingIndex = agentResources.indexOf(agentMax);
+
             int exchangeAmount = 1;
             QVector<ushort> givingResources;
             givingResources.insert(0, ResourceElements, 0);
@@ -229,12 +210,12 @@ void Agent::shiftResource(int givingIndex, ushort exchangeAmount)
     int diff=1;
     while(true)
     {
-        if((givingIndex+diff)<ResourceElements && m_permissions[givingIndex+diff])
+        if((givingIndex+diff)<ResourceElements && m_prices[givingIndex+diff])
         {
             m_resources[givingIndex+diff]+=exchangeAmount;
             break;
         }
-        else if((givingIndex-diff)>=0 && m_permissions[givingIndex-diff])
+        else if((givingIndex-diff)>=0 && m_prices[givingIndex-diff])
         {
             m_resources[givingIndex-diff]+=exchangeAmount;
             break;
@@ -247,6 +228,36 @@ void Agent::shiftResource(int givingIndex, ushort exchangeAmount)
         diff++;
     }
 }
+QVector<ushort> Agent::priorities() const
+{
+    return m_priorities;
+}
+
+void Agent::setPriorities(const QVector<ushort> &priorities)
+{
+    m_priorities = priorities;
+}
+
+QVector<double> Agent::prices() const
+{
+    return m_prices;
+}
+
+void Agent::setPrices(const QVector<double> &prices)
+{
+    m_prices = prices;
+}
+
+QVector<ushort> Agent::resources() const
+{
+    return m_resources;
+}
+
+void Agent::setResources(const QVector<ushort> &resources)
+{
+    m_resources = resources;
+}
+
 int Agent::maxFutileCycles() const
 {
     return m_maxFutileCycles;

@@ -35,7 +35,6 @@ private slots:
 
 public :
 
-    QVector<bool>  permissions() const;
     QList<Agent *> children() const;
 
     int holonIndex() const;
@@ -45,7 +44,7 @@ public :
 
     void start();
 
-    void receiveResultFromParent(QVector<bool> permissions, QVector<ushort> thresholds);
+    void receiveResultFromParent(QVector<double> prices);
     void sendResultToChildren(bool finished);
     void interactWithSiblings();
 
@@ -61,6 +60,15 @@ public :
     void setDesiredVariance(double desiredVariance);
 
 
+    QVector<ushort> resources() const;
+    void setResources(const QVector<ushort> &resources);
+
+    QVector<double> prices() const;
+    void setPrices(const QVector<double> &prices);
+
+    QVector<ushort> priorities() const;
+    void setPriorities(const QVector<ushort> &priorities);
+
 private:
 
     void shiftResource(int givingIndex, ushort exchangeAmount);
@@ -70,9 +78,9 @@ private:
     QList<Agent *> m_children;
     Agent * m_parent;
 
-    QVector<bool> m_permissions;
+    QVector<double> m_prices;
     QVector<ushort> m_resources;
-    QVector<ushort> m_thresholds;
+    QVector<ushort> m_priorities;
 
     int m_receivedSuggestionsFromChilds;
 
