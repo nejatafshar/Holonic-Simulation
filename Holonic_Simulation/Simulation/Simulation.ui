@@ -6,71 +6,23 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>660</width>
-    <height>453</height>
+    <width>709</width>
+    <height>463</height>
    </rect>
   </property>
   <layout class="QGridLayout">
    <item row="0" column="0" rowspan="2" colspan="2">
     <widget class="QGroupBox" name="groupBox">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+       <horstretch>0</horstretch>
+       <verstretch>1</verstretch>
+      </sizepolicy>
+     </property>
      <property name="title">
       <string>Simulation Parameters</string>
      </property>
      <layout class="QGridLayout" name="Layout">
-      <item row="0" column="0" rowspan="2">
-       <widget class="QGroupBox" name="groupBox_2">
-        <property name="title">
-         <string>Holarchy Structure</string>
-        </property>
-        <layout class="QGridLayout" name="gridLayout">
-         <item row="1" column="1" colspan="2">
-          <widget class="QLineEdit" name="holons_lineEdit">
-           <property name="text">
-            <string>5</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="0">
-          <widget class="QLabel" name="label_2">
-           <property name="text">
-            <string>Number  of Holons :</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="0">
-          <widget class="QLabel" name="label">
-           <property name="text">
-            <string>Number  of levels :</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="1" colspan="2">
-          <widget class="QLineEdit" name="levels_lineEdit">
-           <property name="text">
-            <string>3</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="4" rowspan="2">
-          <widget class="QLabel" name="label_13">
-           <property name="text">
-            <string>Total number of holons :</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="5" rowspan="2">
-          <widget class="QLineEdit" name="totalHolons_lineEdit">
-           <property name="text">
-            <string/>
-           </property>
-           <property name="readOnly">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </widget>
-      </item>
       <item row="0" column="1" rowspan="2" colspan="2">
        <widget class="QGroupBox" name="groupBox_3">
         <property name="title">
@@ -104,51 +56,6 @@
             <string>Desired Variance :</string>
            </property>
           </widget>
-         </item>
-        </layout>
-       </widget>
-      </item>
-      <item row="5" column="0" colspan="3">
-       <widget class="QFrame" name="frame">
-        <property name="frameShape">
-         <enum>QFrame::StyledPanel</enum>
-        </property>
-        <property name="frameShadow">
-         <enum>QFrame::Raised</enum>
-        </property>
-        <layout class="QGridLayout" name="gridLayout_4">
-         <item row="1" column="1">
-          <widget class="QPushButton" name="startBut">
-           <property name="text">
-            <string>Start</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="0">
-          <spacer name="horizontalSpacer_3">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>40</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-         <item row="1" column="2">
-          <spacer name="horizontalSpacer">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>40</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
          </item>
         </layout>
        </widget>
@@ -256,19 +163,189 @@
         </layout>
        </widget>
       </item>
+      <item row="0" column="0" rowspan="2">
+       <widget class="QGroupBox" name="groupBox_2">
+        <property name="title">
+         <string>Holarchy Structure</string>
+        </property>
+        <layout class="QGridLayout" name="gridLayout">
+         <item row="1" column="1" colspan="2">
+          <widget class="QLineEdit" name="holons_lineEdit">
+           <property name="text">
+            <string>5</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QLabel" name="label_2">
+           <property name="text">
+            <string>Number  of Holons :</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0">
+          <widget class="QLabel" name="label">
+           <property name="text">
+            <string>Number  of levels :</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1" colspan="2">
+          <widget class="QLineEdit" name="levels_lineEdit">
+           <property name="text">
+            <string>3</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="4" rowspan="2">
+          <widget class="QLabel" name="label_13">
+           <property name="text">
+            <string>Total number of holons :</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="5" rowspan="2">
+          <widget class="QLineEdit" name="totalHolons_lineEdit">
+           <property name="text">
+            <string/>
+           </property>
+           <property name="readOnly">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item row="5" column="0" colspan="3">
+       <widget class="QFrame" name="frame">
+        <property name="frameShape">
+         <enum>QFrame::StyledPanel</enum>
+        </property>
+        <property name="frameShadow">
+         <enum>QFrame::Raised</enum>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_4">
+         <item row="1" column="2">
+          <spacer name="horizontalSpacer">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item row="1" column="0">
+          <spacer name="horizontalSpacer_3">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item row="1" column="1">
+          <widget class="QPushButton" name="startBut">
+           <property name="text">
+            <string>Start</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
      </layout>
     </widget>
    </item>
    <item row="2" column="0" colspan="2">
     <widget class="QGroupBox" name="groupBox_4">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+       <horstretch>0</horstretch>
+       <verstretch>1</verstretch>
+      </sizepolicy>
+     </property>
      <property name="title">
       <string>Simulation Results</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_2">
+      <item row="5" column="0">
+       <widget class="QLabel" name="label_7">
+        <property name="text">
+         <string>Holon Interactions :</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1" colspan="3">
+       <widget class="QLineEdit" name="peakLoad_lineEdit_2">
+        <property name="text">
+         <string/>
+        </property>
+        <property name="readOnly">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="2">
+       <widget class="QLabel" name="label_4">
+        <property name="text">
+         <string>Simulation Time :</string>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="3">
+       <widget class="QLineEdit" name="totalInteractions_lineEdit">
+        <property name="text">
+         <string/>
+        </property>
+        <property name="readOnly">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
       <item row="0" column="0">
        <widget class="QLabel" name="label_3">
         <property name="text">
          <string>Peak Load :</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="label_9">
+        <property name="text">
+         <string>Total Price :</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="3">
+       <widget class="QLineEdit" name="simulationTime_lineEdit">
+        <property name="text">
+         <string/>
+        </property>
+        <property name="readOnly">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="4">
+       <widget class="QLabel" name="label_5">
+        <property name="text">
+         <string>Sec</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <widget class="QLabel" name="label_12">
+        <property name="text">
+         <string>Satisfaction Rate :</string>
         </property>
        </widget>
       </item>
@@ -282,17 +359,10 @@
         </property>
        </widget>
       </item>
-      <item row="5" column="0">
-       <widget class="QLabel" name="label_7">
+      <item row="5" column="2">
+       <widget class="QLabel" name="label_8">
         <property name="text">
-         <string>Holon Interactions :</string>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="2">
-       <widget class="QLabel" name="label_4">
-        <property name="text">
-         <string>Simulation Time :</string>
+         <string>Total Interactions :</string>
         </property>
        </widget>
       </item>
@@ -316,69 +386,37 @@
         </property>
        </widget>
       </item>
-      <item row="3" column="0">
-       <widget class="QLabel" name="label_12">
-        <property name="text">
-         <string>Satisfaction Rate :</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="0">
-       <widget class="QLabel" name="label_9">
-        <property name="text">
-         <string>Total Price :</string>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="3">
-       <widget class="QLineEdit" name="simulationTime_lineEdit">
-        <property name="text">
-         <string/>
-        </property>
-        <property name="readOnly">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="1" colspan="3">
-       <widget class="QLineEdit" name="peakLoad_lineEdit_2">
-        <property name="text">
-         <string/>
-        </property>
-        <property name="readOnly">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="4">
-       <widget class="QLabel" name="label_5">
-        <property name="text">
-         <string>Sec</string>
-        </property>
-       </widget>
-      </item>
-      <item row="5" column="2">
-       <widget class="QLabel" name="label_8">
-        <property name="text">
-         <string>Total Interactions :</string>
-        </property>
-       </widget>
-      </item>
-      <item row="5" column="3">
-       <widget class="QLineEdit" name="totalInteractions_lineEdit">
-        <property name="text">
-         <string/>
-        </property>
-        <property name="readOnly">
-         <bool>true</bool>
-        </property>
-       </widget>
+     </layout>
+    </widget>
+   </item>
+   <item row="3" column="0" colspan="2">
+    <widget class="QGroupBox" name="groupBox_6">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+       <horstretch>0</horstretch>
+       <verstretch>3</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="title">
+      <string>Peak Load</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_6">
+      <item row="0" column="0">
+       <widget class="CustomPlot" name="peakLoadPlot" native="true"/>
       </item>
      </layout>
     </widget>
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>CustomPlot</class>
+   <extends>QWidget</extends>
+   <header>customplot.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

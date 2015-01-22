@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += widgets
+QT       += widgets printsupport
 
 CONFIG += c++11
 
