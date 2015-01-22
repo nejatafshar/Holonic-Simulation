@@ -17,6 +17,8 @@ Simulation::Simulation(QWidget *parent) :
 
     ui->setupUi(this);
 
+    peakLoads.insert(0, ResourceElements, 0);
+
     QSettings settings;
     ui->levels_lineEdit->setText(settings.value("SimulationSettings/levels","3").toString());
     ui->holons_lineEdit->setText(settings.value("SimulationSettings/holons","5").toString());
@@ -28,6 +30,9 @@ Simulation::Simulation(QWidget *parent) :
     ui->prioritiesStandardDeviation_lineEdit->setText(settings.value("SimulationSettings/prioritiesStandardDeviation","2").toString());
 
     initializePlot();
+
+    peakLoadPlotTimer.setInterval(30);
+    connect(&peakLoadPlotTimer, &QTimer::timeout, this, &Simulation::updatePeakLoadPlot );
 
 
     root = NULL;
@@ -113,6 +118,7 @@ void Simulation::initializeHolarchy(int levels, int holons)
     root->setDesiredVariance(ui->desiredVariance_lineEdit->text().toDouble());
 
     connect(root, &Agent::simulationFinished, this, &Simulation::onSimulationFinished);
+    connect(root, &Agent::peakLoadChanged, this, &Simulation::setPeakLoads);
 
     //Initialize variables
     meanResources.clear();
@@ -147,21 +153,25 @@ void Simulation::initializeHolon(Agent* parent, int holons, int level, int maxLe
     {
         Agent * agent = new Agent(parent);
 
-        QVector<ushort> resources;
-        QVector<ushort> priorities;
-        resources.resize(ResourceElements);
 
-        for(int i=0; i<ResourceElements; i++)
+        if(level==maxLevels-1)//set values for leafs
         {
-            double val;
-            statistics.gaussianRandomGererator(meanResources[i], resourceStandardDeviation, 1, &val);
-            resources[i] = (ushort)val;
-            statistics.gaussianRandomGererator(meanPriorities[i], priorityStandardDeviation, 1, &val);
-            priorities[i] = (ushort)val;
-        }
 
-        agent->setResources(resources);
-        agent->setPriorities(priorities);
+            QVector<ushort> resources;
+            QVector<double> priorities;
+
+            for(int i=0; i<ResourceElements; i++)
+            {
+                double val;
+                statistics.gaussianRandomGererator(meanResources[i], resourceStandardDeviation, 1, &val);
+                resources.append((ushort)val);
+                statistics.gaussianRandomGererator(meanPriorities[i], priorityStandardDeviation, 1, &val);
+                priorities.append(val);
+            }
+
+            agent->setResources(resources);
+            agent->setPriorities(priorities);
+        }
 
         parent->addChild(agent);
         initializeHolon(agent, holons, level, maxLevels);
@@ -178,6 +188,10 @@ void Simulation::on_startBut_clicked()
     elapsedTimer.start();
 
     root->start();
+
+
+    peakLoadPlotTimer.start();
+
 }
 
 void Simulation::updateTotalHolons()
@@ -192,4 +206,28 @@ void Simulation::onSimulationFinished()
     qint64 elapsed = elapsedTimer.nsecsElapsed();
 
     ui->simulationTime_lineEdit->setText(QString::number(elapsed/1e9, 'f', 4));
+
+    peakLoadPlotTimer.stop();
+}
+
+void Simulation::setPeakLoads(QVector<ushort> peakLoads)
+{
+    this->peakLoads = peakLoads;
+}
+
+void Simulation::updatePeakLoadPlot()
+{
+    double * xdata=new double[ResourceElements];
+    double * ydata=new double[ResourceElements];
+
+    for(int i=0;i<ResourceElements;i++)
+    {
+       xdata[i]=i+1;
+       ydata[i]=peakLoads[i];
+    }
+
+    ui->peakLoadPlot->updateGraph(0, xdata, ydata, ResourceElements);
+
+    delete xdata;
+    delete ydata;
 }

@@ -7,6 +7,7 @@
 #include <QWidget>
 #include <QVector>
 #include <QElapsedTimer>
+#include <QTimer>
 
 #include "agent.h"
 #include "statistics.h"
@@ -35,6 +36,9 @@ private slots:
     void updateTotalHolons();
 
     void onSimulationFinished();
+    void setPeakLoads(QVector<ushort> peakLoads);
+
+    void updatePeakLoadPlot();
 
 private:
 
@@ -51,6 +55,9 @@ private:
 
      Agent * root;
 
+     QVector<ushort> peakLoads;
+
+     QTimer peakLoadPlotTimer;
 
      QElapsedTimer elapsedTimer;
 
