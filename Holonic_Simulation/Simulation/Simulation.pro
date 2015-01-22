@@ -51,3 +51,10 @@ unix:{
     # add your own with quoting gyrations to make sure $ORIGIN gets to the command line unexpanded
     QMAKE_LFLAGS += "-Wl,-rpath,\'\$$ORIGIN\'"
 }
+
+win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../CustomPlot/release/ -lCustomPlot
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../CustomPlot/debug/ -lCustomPlot
+else:unix: LIBS += -L$$OUT_PWD/../CustomPlot/ -lCustomPlot
+
+INCLUDEPATH += $$PWD/../CustomPlot
+DEPENDPATH += $$PWD/../CustomPlot
