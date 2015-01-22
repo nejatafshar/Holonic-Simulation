@@ -12,7 +12,7 @@ Statistics::~Statistics()
 
 }
 
-double Statistics::getMean(double * data, int size)
+inline double Statistics::getMean(double * data, int size)
 {
     double sum = 0.0;
     for(int i=0; i<size; i++)
@@ -20,7 +20,7 @@ double Statistics::getMean(double * data, int size)
     return sum/size;
 }
 
-double Statistics::getVariance(double * data, int size)
+inline double Statistics::getVariance(double * data, int size)
 {
     double mean = getMean(data, size);
     double temp = 0;
@@ -29,12 +29,12 @@ double Statistics::getVariance(double * data, int size)
     return temp/size;
 }
 
-double Statistics::getStdDev(double * data, int size)
+inline double Statistics::getStdDev(double * data, int size)
 {
     return qSqrt(getVariance(data, size));
 }
 
-double Statistics::getMedian(double * data, int size)
+inline double Statistics::getMedian(double * data, int size)
 {
     std::vector<double> stdvector;
     stdvector.assign(data, data+size);
@@ -51,7 +51,7 @@ double Statistics::getMedian(double * data, int size)
     }
 }
 
-void Statistics::gaussianRandomGererator(double mean, double sdv, int size, double * output)
+inline void Statistics::gaussianRandomGererator(double mean, double sdv, int size, double * output)
 {
     std::random_device rd;
     std::mt19937 gen(rd());
