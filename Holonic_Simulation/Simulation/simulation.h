@@ -38,6 +38,8 @@ private slots:
 
 private:
 
+    void initializePlot();
+
     void initializeHolarchy(int levels, int holons);
 
     void initializeHolon(Agent* parent, int holons, int level, int maxLevel);

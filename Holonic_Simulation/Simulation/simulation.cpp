@@ -27,6 +27,8 @@ Simulation::Simulation(QWidget *parent) :
     ui->priorities_lineEdit->setText(settings.value("SimulationSettings/priorities","50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50").toString());
     ui->prioritiesStandardDeviation_lineEdit->setText(settings.value("SimulationSettings/prioritiesStandardDeviation","2").toString());
 
+    initializePlot();
+
 
     root = NULL;
 
@@ -50,7 +52,55 @@ Simulation::~Simulation()
     settings.setValue("SimulationSettings/priorities",ui->priorities_lineEdit->text());
     settings.setValue("SimulationSettings/prioritiesStandardDeviation",ui->prioritiesStandardDeviation_lineEdit->text());
 
+
+    settings.setValue("peakLoadPlot/penColor",ui->peakLoadPlot->graph(0)->pen().color());
+    settings.setValue("peakLoadPlot/brushColor",ui->peakLoadPlot->graph(0)->brush().color());
+    settings.setValue("peakLoadPlot/lineStyle",ui->peakLoadPlot->graph(0)->lineStyle());
+    settings.setValue("peakLoadPlot/pointStyle",ui->peakLoadPlot->graph(0)->scatterStyle().shape());
+
     delete ui;
+}
+
+void Simulation::initializePlot()
+{
+    CustomPlot * plot= qobject_cast<CustomPlot *>(ui->peakLoadPlot);
+    if (plot)
+    {
+
+        plot->xAxis->setLabel("");
+        plot->legend->setVisible(false);
+        plot->xAxis->setRange(0,25);
+        plot->yAxis->setRange(0,100);
+        plot->xAxis->setTicks(true);
+        plot->xAxis2->setTicks(false);
+
+
+//        plot->setBackground(QColor(10,10,10));
+//        plot->xAxis->setTickLabelColor(QColor(225,225,225));
+//        plot->yAxis->setTickLabelColor(QColor(225,225,225));
+//        plot->xAxis->setLabelColor(QColor(225,225,225));
+//        plot->yAxis->setLabelColor(QColor(225,225,225));
+
+        plot->yAxis->setLabel("KW/h");
+
+        plot->addGraph("",0,0,0);
+
+        plot->graph()->setLineStyle(QCPGraph::lsLine);
+
+        plot->graph()->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssDisc, 5));
+
+        plot->yAxis->setSubTickCount(0);
+
+        plot->autoRescale=true;
+        plot->rescaleYWithMargin=true;
+
+        QSettings settings;
+        plot->setPenColor(0, settings.value("peakLoadPlot/penColor",QColor(rand()%245+10, rand()%245+10, rand()%245+10)).value<QColor>() );
+        plot->setBrushColor(0, settings.value("peakLoadPlot/brushColor",QColor(rand()%245+10, rand()%245+10, rand()%245+10)).value<QColor>() );
+        plot->graph()->setLineStyle((QCPGraph::LineStyle)settings.value("peakLoadPlot/lineStyle",QCPGraph::lsLine).toInt());
+        plot->graph()->setScatterStyle(QCPScatterStyle((QCPScatterStyle::ScatterShape) settings.value("peakLoadPlot/pointStyle",QCPScatterStyle::ssDisc).toInt() ));
+
+    }
 }
 
 void Simulation::initializeHolarchy(int levels, int holons)
