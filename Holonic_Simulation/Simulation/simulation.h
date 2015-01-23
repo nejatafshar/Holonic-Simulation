@@ -66,7 +66,7 @@ private:
      QVector<ushort> meanResources;
      double resourceStandardDeviation;
 
-     QVector<ushort> meanPriorities;
+     QVector<double> meanPriorities;
      double priorityStandardDeviation;
 
 };

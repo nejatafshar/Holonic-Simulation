@@ -17,41 +17,43 @@ public:
 
 signals:
 
-    void suggestParent(QVector<ushort> resources);
-    bool suggestSibling(int targetHolonIndex, QVector<ushort> givingResources, QVector<ushort> gettingResources);
-    void simulationFinished();
+    void suggestParent(QVector<ushort> resources, QVector<double> priorities);
+    bool suggestSibling(int targetHolonIndex, int gettingIndex, int givingIndex);
+    void sendResultToChild(int targetHolonIndex, QVector<bool> permissions);
+    void sendInteractCommandToChilds();
+    void sendContinueCommandToChilds();
 
+    void simulationFinished();
+    void peakLoadChanged(QVector<ushort> resources);
 
 public slots:
 
 
+    void receiveSuggestFromChild(QVector<ushort> resources, QVector<double> priorities);
+    bool receiveSuggestFromSibling(int givingIndex,int gettingIndex);
+    void receiveResultFromParent(QVector<bool> permissions);
+    void interactWithSiblings();
+    void continueDownwards();
 
 
 private slots:
 
-    void receiveSuggestFromChild(QVector<ushort> resources);
 
-    bool mapChildrenSuggestions(int targetHolonIndex,  QVector<ushort> givingResources, QVector<ushort> gettingResources);
 
 public :
 
-    QList<Agent *> children() const;
-
-    int holonIndex() const;
-    void setHolonIndex(int holonIndex);
 
     void addChild(Agent * agent);
 
     void start();
 
-    void receiveResultFromParent(QVector<double> prices);
-    void sendResultToChildren(bool finished);
-    void interactWithSiblings();
-
-    bool receiveSuggestFromSibling(QVector<ushort> givingResources, QVector<ushort> gettingResources);
-
 
     //Setters & Getters
+
+    QList<Agent *> children() const;
+
+    int holonIndex() const;
+    void setHolonIndex(int holonIndex);
 
     int maxFutileCycles() const;
     void setMaxFutileCycles(int value);
@@ -59,28 +61,27 @@ public :
     double desiredVariance() const;
     void setDesiredVariance(double desiredVariance);
 
-
     QVector<ushort> resources() const;
     void setResources(const QVector<ushort> &resources);
 
-    QVector<double> prices() const;
-    void setPrices(const QVector<double> &prices);
+    QVector<bool> permissions() const;
+    void setPermissions(const QVector<bool> &permissions);
 
-    QVector<ushort> priorities() const;
-    void setPriorities(const QVector<ushort> &priorities);
+    QVector<double> priorities() const;
+    void setPriorities(const QVector<double> &priorities);
 
 private:
 
-    void shiftResource(int givingIndex, ushort exchangeAmount);
+    void shiftResource(int givingIndex);
 
     int m_holonIndex;
 
     QList<Agent *> m_children;
     Agent * m_parent;
 
-    QVector<double> m_prices;
+    QVector<bool> m_permission;
     QVector<ushort> m_resources;
-    QVector<ushort> m_priorities;
+    QVector<double> m_priorities;
 
     int m_receivedSuggestionsFromChilds;
 

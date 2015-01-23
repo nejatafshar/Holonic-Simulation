@@ -133,7 +133,7 @@ void Simulation::initializeHolarchy(int levels, int holons)
     QStringList list2 = ui->priorities_lineEdit->text().split(",");
     foreach(QString item, list2)
     {
-        meanPriorities.append(item.toUShort());
+        meanPriorities.append(item.toDouble());
     }
     priorityStandardDeviation = ui->prioritiesStandardDeviation_lineEdit->text().toDouble();
 

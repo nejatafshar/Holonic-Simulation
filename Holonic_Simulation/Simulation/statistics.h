@@ -9,11 +9,11 @@ public:
     Statistics();
     ~Statistics();
 
-    inline double getMean(double *  data, int size);
-    inline double getVariance(double * data, int size);
-    inline double getStdDev(double * data, int size);
-    inline double getMedian(double * data, int size);
-    inline void gaussianRandomGererator(double mean, double sdv, int size, double * output);
+    double getMean(double *  data, int size);
+    double getVariance(double * data, int size);
+    double getStdDev(double * data, int size);
+    double getMedian(double * data, int size);
+    void gaussianRandomGererator(double mean, double sdv, int size, double * output);
 
 };
 
