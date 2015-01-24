@@ -98,6 +98,11 @@ void Simulation::initializePlot()
 
         plot->autoRescale=true;
         plot->rescaleYWithMargin=true;
+        plot->rescaleXWithMargin=true;
+        plot->XmarginFactor = 0.04;
+
+        plot->setHasZoomModeBut(false);
+        plot->setHasRescaleBut(false);
 
         QSettings settings;
         plot->setPenColor(0, settings.value("peakLoadPlot/penColor",QColor(rand()%245+10, rand()%245+10, rand()%245+10)).value<QColor>() );
