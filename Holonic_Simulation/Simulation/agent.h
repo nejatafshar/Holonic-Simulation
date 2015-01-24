@@ -24,7 +24,7 @@ signals:
     void sendContinueCommandToChilds();
 
     void simulationFinished();
-    void peakLoadChanged(QVector<ushort> resources);
+    void resultChanged(QVector<ushort> resources, double variance);
 
 public slots:
 
@@ -69,6 +69,10 @@ public :
 
     QVector<double> priorities() const;
     void setPriorities(const QVector<double> &priorities);
+
+private:
+
+    int getAgentWithMaxInPosition(int position, QList<Agent *> agents);
 
 private:
 

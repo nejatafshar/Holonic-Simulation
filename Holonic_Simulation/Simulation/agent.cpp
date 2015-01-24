@@ -30,7 +30,7 @@ void Agent::addChild(Agent *agent)
 {
     agent->setHolonIndex(m_children.count());
 
-    connect(agent, &Agent::suggestParent, this, &Agent::receiveSuggestFromChild);
+    connect(agent, &Agent::suggestParent, this, &Agent::receiveSuggestFromChild, Qt::QueuedConnection);
 
     connect(agent, &Agent::suggestSibling, [this](int targetHolonIndex, int gettingIndex, int givingIndex)->bool
     {
@@ -44,7 +44,7 @@ void Agent::addChild(Agent *agent)
     });
 
     connect(this, &Agent::sendInteractCommandToChilds, agent, &Agent::interactWithSiblings);
-    connect(this, &Agent::sendContinueCommandToChilds, agent, &Agent::continueDownwards);
+    connect(this, &Agent::sendContinueCommandToChilds, agent, &Agent::continueDownwards, Qt::QueuedConnection);
 
 
     m_children.append(agent);
@@ -83,7 +83,6 @@ void Agent::receiveSuggestFromChild(QVector<ushort> resources, QVector<double> p
     {
         if(m_parent==NULL) // This is root
         {
-            emit peakLoadChanged(m_resources);
 
             Statistics s;
             double r[ResourceElements];
@@ -91,12 +90,25 @@ void Agent::receiveSuggestFromChild(QVector<ushort> resources, QVector<double> p
                 r[i] = m_resources[i];
             double variance = s.getVariance(r, ResourceElements);
 
+            emit resultChanged(m_resources, variance);
+
             if(variance<=m_desiredVariance)
             {
                 emit simulationFinished();
             }
             else
+            {
+                QVector<ushort>::iterator it = std::max_element(m_resources.begin(), m_resources.end());
+                ushort maxResourceValue = *it;
+                int maxResourceIndex = m_resources.indexOf(maxResourceValue);
+
+                for(int i=0;i<ResourceElements;i++)
+                    m_permission[i]=true;
+
+                m_permission[maxResourceIndex] = false;
+
                 continueDownwards();
+            }
 
         }
         else // This is an intermediate holon
@@ -134,17 +146,23 @@ void Agent::continueDownwards()
     }
     else if(m_children.isEmpty()) //leaf
     {
-        //...
+        shiftResource(m_permission.indexOf(false));
         emit suggestParent(m_resources, m_priorities);
         return;
     }
 
 
     //Deciding about permissions and sending results to children
+    int resourceIndex = m_permission.indexOf(false);
+    int agentIndex = getAgentWithMaxInPosition(resourceIndex, m_children);
     for(int i=0;i<m_children.count();i++)
     {
-        //...
-        emit sendResultToChild(i, m_permission);
+        QVector<bool> permissions;
+        permissions.insert(0, ResourceElements, true);
+        if(i==agentIndex)
+            permissions[resourceIndex] = false;
+
+        emit sendResultToChild(i, permissions);
     }
 
     for(int i=0;i<ResourceElements;i++)
@@ -179,14 +197,7 @@ void Agent::interactWithSiblings()
 
         if(i!=gettingIndex)
         {
-            QVector<ushort> resources;
-            foreach(Agent * agent, m_parent->children())
-            {
-                resources.append(agent->resources()[i]);
-            }
-            QVector<ushort>::iterator it = std::max_element(resources.begin(), resources.end());
-            ushort maxValue = *it;
-            int agentIndex = resources.indexOf(maxValue);
+            int agentIndex = getAgentWithMaxInPosition(i, m_parent->children());
 
             if(agentIndex != m_holonIndex)
             {
@@ -252,6 +263,18 @@ QVector<double> Agent::priorities() const
 void Agent::setPriorities(const QVector<double> &priorities)
 {
     m_priorities = priorities;
+}
+
+int Agent::getAgentWithMaxInPosition(int position, QList<Agent *> agents)
+{
+    QVector<ushort> resources;
+    foreach(Agent * agent, agents)
+    {
+        resources.append(agent->resources()[position]);
+    }
+    QVector<ushort>::iterator it = std::max_element(resources.begin(), resources.end());
+    ushort maxValue = *it;
+    return resources.indexOf(maxValue);
 }
 
 QVector<bool> Agent::permissions() const
