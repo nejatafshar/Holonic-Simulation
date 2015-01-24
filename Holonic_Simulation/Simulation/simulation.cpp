@@ -154,7 +154,7 @@ void Simulation::initializeHolon(Agent* parent, int holons, int level, int maxLe
         Agent * agent = new Agent(parent);
 
 
-        if(level==maxLevels-1)//set values for leafs
+        if(level==maxLevels)//set values for leafs
         {
 
             QVector<ushort> resources;
@@ -198,7 +198,7 @@ void Simulation::updateTotalHolons()
 {
     int holons = ui->holons_lineEdit->text().toInt();
     int levels = ui->levels_lineEdit->text().toInt();
-    ui->totalHolons_lineEdit->setText(QString("%1").arg(qPow(holons, levels+1)-1));
+    ui->totalHolons_lineEdit->setText(QString("%1").arg(qPow(holons, levels)+holons+1));
 }
 
 void Simulation::onSimulationFinished()
