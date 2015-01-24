@@ -18,6 +18,7 @@ Simulation::Simulation(QWidget *parent) :
     ui->setupUi(this);
 
     peakLoads.insert(0, ResourceElements, 0);
+    variance = 0;
 
     QSettings settings;
     ui->levels_lineEdit->setText(settings.value("SimulationSettings/levels","3").toString());
@@ -32,7 +33,7 @@ Simulation::Simulation(QWidget *parent) :
     initializePlot();
 
     peakLoadPlotTimer.setInterval(30);
-    connect(&peakLoadPlotTimer, &QTimer::timeout, this, &Simulation::updatePeakLoadPlot );
+    connect(&peakLoadPlotTimer, &QTimer::timeout, this, &Simulation::updateResults );
 
 
     root = NULL;
@@ -123,7 +124,8 @@ void Simulation::initializeHolarchy(int levels, int holons)
     root->setDesiredVariance(ui->desiredVariance_lineEdit->text().toDouble());
 
     connect(root, &Agent::simulationFinished, this, &Simulation::onSimulationFinished);
-    connect(root, &Agent::peakLoadChanged, this, &Simulation::setPeakLoads);
+    connect(root, &Agent::resultChanged, this, &Simulation::setResults);
+
 
     //Initialize variables
     meanResources.clear();
@@ -131,6 +133,7 @@ void Simulation::initializeHolarchy(int levels, int holons)
     foreach(QString item, list1)
     {
         meanResources.append(item.toUShort());
+        peakLoads[meanResources.count()-1] = 0;
     }
     resourceStandardDeviation = ui->resourceStandardDeviation_lineEdit->text().toDouble();
 
@@ -170,6 +173,7 @@ void Simulation::initializeHolon(Agent* parent, int holons, int level, int maxLe
                 double val;
                 statistics.gaussianRandomGererator(meanResources[i], resourceStandardDeviation, 1, &val);
                 resources.append((ushort)val);
+                peakLoads[i]+=resources[i];
                 statistics.gaussianRandomGererator(meanPriorities[i], priorityStandardDeviation, 1, &val);
                 priorities.append(val);
             }
@@ -185,18 +189,24 @@ void Simulation::initializeHolon(Agent* parent, int holons, int level, int maxLe
 
 void Simulation::on_startBut_clicked()
 {
+    elapsedTimer.start();
+
+    root->start();
+
+    peakLoadPlotTimer.start();
+
+}
+
+void Simulation::on_initializeHolarchyBut_clicked()
+{
     int levels = ui->levels_lineEdit->text().toInt();
     int holons = ui->holons_lineEdit->text().toInt();
 
     initializeHolarchy(levels, holons);
 
-    elapsedTimer.start();
+    updateResults();
 
-    root->start();
-
-
-    peakLoadPlotTimer.start();
-
+    ui->startBut->setEnabled(true);
 }
 
 void Simulation::updateTotalHolons()
@@ -215,13 +225,16 @@ void Simulation::onSimulationFinished()
     peakLoadPlotTimer.stop();
 }
 
-void Simulation::setPeakLoads(QVector<ushort> peakLoads)
+void Simulation::setResults(QVector<ushort> peakLoads, double variance)
 {
     this->peakLoads = peakLoads;
+    this->variance = variance;
 }
 
-void Simulation::updatePeakLoadPlot()
+void Simulation::updateResults()
 {
+
+    //Update peak load
     double * xdata=new double[ResourceElements];
     double * ydata=new double[ResourceElements];
 
@@ -235,4 +248,8 @@ void Simulation::updatePeakLoadPlot()
 
     delete xdata;
     delete ydata;
+
+    //Update variance
+
+    ui->variance_lineEdit->setText(QString::number(variance, 'f', 4));
 }

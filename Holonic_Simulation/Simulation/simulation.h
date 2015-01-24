@@ -32,13 +32,15 @@ public:
 
 private slots:
     void on_startBut_clicked();
+    void on_initializeHolarchyBut_clicked();
 
     void updateTotalHolons();
 
     void onSimulationFinished();
-    void setPeakLoads(QVector<ushort> peakLoads);
+    void setResults(QVector<ushort> peakLoads, double variance);
 
-    void updatePeakLoadPlot();
+    void updateResults();
+
 
 private:
 
@@ -56,7 +58,7 @@ private:
      Agent * root;
 
      QVector<ushort> peakLoads;
-
+     double variance;
      QTimer peakLoadPlotTimer;
 
      QElapsedTimer elapsedTimer;
