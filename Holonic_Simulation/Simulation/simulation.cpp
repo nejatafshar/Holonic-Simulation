@@ -198,7 +198,7 @@ void Simulation::updateTotalHolons()
 {
     int holons = ui->holons_lineEdit->text().toInt();
     int levels = ui->levels_lineEdit->text().toInt();
-    ui->totalHolons_lineEdit->setText(QString("%1").arg(qPow(holons, levels)));
+    ui->totalHolons_lineEdit->setText(QString("%1").arg(qPow(holons, levels+1)-1));
 }
 
 void Simulation::onSimulationFinished()
