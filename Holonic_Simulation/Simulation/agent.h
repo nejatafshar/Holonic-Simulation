@@ -70,6 +70,12 @@ public :
     QVector<double> priorities() const;
     void setPriorities(const QVector<double> &priorities);
 
+    bool stopped() const;
+    void setStopped(bool stopped);
+
+    bool horizontalInteraction() const;
+    void setHorizontalInteraction(bool horizontalInteraction);
+
 private:
 
     int getAgentWithMaxInPosition(int position, QList<Agent *> agents);
@@ -91,6 +97,8 @@ private:
 
     int m_maxFutileCycles;
     double m_desiredVariance;
+    bool m_stopped;
+    bool m_horizontalInteraction;
 
 };
 

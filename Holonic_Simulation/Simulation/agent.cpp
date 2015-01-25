@@ -14,6 +14,7 @@ Agent::Agent(QObject *parent) : QObject(parent)
 
     m_maxFutileCycles = 0;
     m_desiredVariance = 0;
+    m_stopped = false;
 
 
 }
@@ -92,8 +93,9 @@ void Agent::receiveSuggestFromChild(QVector<ushort> resources, QVector<double> p
 
             emit resultChanged(m_resources, variance);
 
-            if(variance<=m_desiredVariance)
+            if(variance<=m_desiredVariance || m_stopped)
             {
+                m_stopped = false;
                 emit simulationFinished();
             }
             else
@@ -173,7 +175,8 @@ void Agent::continueDownwards()
     }
 
     //Interaction
-    emit sendInteractCommandToChilds();
+    if(m_horizontalInteraction)
+        emit sendInteractCommandToChilds();
 
     //Continue downwards
     emit sendContinueCommandToChilds();
@@ -255,6 +258,29 @@ void Agent::shiftResource(int givingIndex)
         diff++;
     }
 }
+bool Agent::horizontalInteraction() const
+{
+    return m_horizontalInteraction;
+}
+
+void Agent::setHorizontalInteraction(bool horizontalInteraction)
+{
+    m_horizontalInteraction = horizontalInteraction;
+
+    foreach(Agent * agent, m_children)
+        agent->setHorizontalInteraction(false);
+}
+
+bool Agent::stopped() const
+{
+    return m_stopped;
+}
+
+void Agent::setStopped(bool stopped)
+{
+    m_stopped = stopped;
+}
+
 QVector<double> Agent::priorities() const
 {
     return m_priorities;

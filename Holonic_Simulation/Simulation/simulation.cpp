@@ -101,7 +101,11 @@ void Simulation::initializePlot()
         plot->rescaleYWithMargin=true;
         plot->rescaleXWithMargin=true;
         plot->XmarginFactor = 0.04;
-
+        plot->holdMaxScale = true;
+        plot->holdMaxScaleFactor = 0.3;
+        plot->holdMinScale = true;
+        plot->holdMinScaleFactor = 0.3;
+        plot->maxIndicateNum = 1;
         plot->setHasZoomModeBut(false);
         plot->setHasRescaleBut(false);
 
@@ -147,6 +151,8 @@ void Simulation::initializeHolarchy(int levels, int holons)
 
     //Make Holarchy
     initializeHolon(root, holons, 0, levels);
+
+    root->setHorizontalInteraction(ui->horizontalInteractionChkBx->isChecked());
 }
 
 void Simulation::initializeHolon(Agent* parent, int holons, int level, int maxLevels)
@@ -195,6 +201,19 @@ void Simulation::on_startBut_clicked()
 
     peakLoadPlotTimer.start();
 
+    ui->stopBut->setEnabled(true);
+    ui->startBut->setEnabled(false);
+    ui->initializeHolarchyBut->setEnabled(false);
+
+}
+
+void Simulation::on_stopBut_clicked()
+{
+    root->setStopped(true);
+
+    ui->stopBut->setEnabled(false);
+    ui->startBut->setEnabled(false);
+    ui->initializeHolarchyBut->setEnabled(true);
 }
 
 void Simulation::on_initializeHolarchyBut_clicked()
@@ -251,5 +270,11 @@ void Simulation::updateResults()
 
     //Update variance
 
-    ui->variance_lineEdit->setText(QString::number(variance, 'f', 4));
+    ui->variance_lineEdit->setText(QString::number(variance, 'f', 2));
+}
+
+void Simulation::on_horizontalInteractionChkBx_toggled(bool checked)
+{
+    if(root)
+        root->setHorizontalInteraction(checked);
 }

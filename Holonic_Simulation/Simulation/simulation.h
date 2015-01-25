@@ -42,6 +42,10 @@ private slots:
     void updateResults();
 
 
+    void on_stopBut_clicked();
+
+    void on_horizontalInteractionChkBx_toggled(bool checked);
+
 private:
 
     void initializePlot();
