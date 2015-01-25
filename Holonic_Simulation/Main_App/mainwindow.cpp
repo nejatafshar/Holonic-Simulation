@@ -8,6 +8,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
 
     ui->mainToolBar->setHidden(true);
+    ui->statusBar->setHidden(true);
 }
 
 MainWindow::~MainWindow()

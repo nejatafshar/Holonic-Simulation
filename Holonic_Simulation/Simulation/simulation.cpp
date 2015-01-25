@@ -21,14 +21,14 @@ Simulation::Simulation(QWidget *parent) :
     variance = 0;
 
     QSettings settings;
-    ui->levels_lineEdit->setText(settings.value("SimulationSettings/levels","3").toString());
-    ui->holons_lineEdit->setText(settings.value("SimulationSettings/holons","5").toString());
-    ui->maxCycles_lineEdit->setText(settings.value("SimulationSettings/maxCycles","10").toString());
+    ui->levels_lineEdit->setText(settings.value("SimulationSettings/levels","2").toString());
+    ui->holons_lineEdit->setText(settings.value("SimulationSettings/holons","20").toString());
+    ui->maxCycles_lineEdit->setText(settings.value("SimulationSettings/maxCycles","4000").toString());
     ui->desiredVariance_lineEdit->setText(settings.value("SimulationSettings/desiredVariance","1").toString());
-    ui->agentNeeds_lineEdit->setText(settings.value("SimulationSettings/agentNeeds","10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10").toString());
-    ui->resourceStandardDeviation_lineEdit->setText(settings.value("SimulationSettings/standardDeviation","2").toString());
+    ui->agentNeeds_lineEdit->setText(settings.value("SimulationSettings/agentNeeds","100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100").toString());
+    ui->resourceStandardDeviation_lineEdit->setText(settings.value("SimulationSettings/standardDeviation","4").toString());
     ui->priorities_lineEdit->setText(settings.value("SimulationSettings/priorities","50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50").toString());
-    ui->prioritiesStandardDeviation_lineEdit->setText(settings.value("SimulationSettings/prioritiesStandardDeviation","2").toString());
+    ui->prioritiesStandardDeviation_lineEdit->setText(settings.value("SimulationSettings/prioritiesStandardDeviation","4").toString());
 
     initializePlot();
 
@@ -234,7 +234,14 @@ void Simulation::on_initializeHolarchyBut_clicked()
 
     elapsedTimer.start();
 
+
+    ui->peakLoadPlot->holdMaxScale = false;
+    ui->peakLoadPlot->holdMinScale = false;
+
     updateResults();
+
+    ui->peakLoadPlot->holdMaxScale = true;
+    ui->peakLoadPlot->holdMinScale = true;
 
     ui->startBut->setEnabled(true);
 }
