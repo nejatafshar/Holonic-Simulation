@@ -93,7 +93,11 @@ void Simulation::initializePlot()
 
         plot->graph()->setLineStyle(QCPGraph::lsLine);
 
-        plot->graph()->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssDisc, 5));
+        plot->graph()->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssDisc, 10));
+
+        QPen graphPen = plot->graph(0)->pen();
+        graphPen.setWidth(5);
+        plot->graph(0)->setPen(graphPen);
 
         plot->yAxis->setSubTickCount(0);
 
