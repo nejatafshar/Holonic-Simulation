@@ -223,6 +223,13 @@ void Simulation::on_initializeHolarchyBut_clicked()
 
     initializeHolarchy(levels, holons);
 
+    double r[ResourceElements];
+    for(int i=0;i<ResourceElements;i++)
+        r[i] = peakLoads[i];
+    variance = statistics.getVariance(r, ResourceElements);
+
+    elapsedTimer.start();
+
     updateResults();
 
     ui->startBut->setEnabled(true);
@@ -237,9 +244,8 @@ void Simulation::updateTotalHolons()
 
 void Simulation::onSimulationFinished()
 {
-    qint64 elapsed = elapsedTimer.nsecsElapsed();
 
-    ui->simulationTime_lineEdit->setText(QString::number(elapsed/1e9, 'f', 4));
+    updateResults();
 
     peakLoadPlotTimer.stop();
 }
@@ -252,6 +258,9 @@ void Simulation::setResults(QVector<ushort> peakLoads, double variance)
 
 void Simulation::updateResults()
 {
+    //Update elapsed time
+    qint64 elapsed = elapsedTimer.nsecsElapsed();
+    ui->simulationTime_lineEdit->setText(QString::number(elapsed/1e9, 'f', 2));
 
     //Update peak load
     double * xdata=new double[ResourceElements];
@@ -268,8 +277,17 @@ void Simulation::updateResults()
     delete xdata;
     delete ydata;
 
-    //Update variance
 
+    //Update peak load in lineEdit
+
+    QStringList p;
+    for(int i=0;i<peakLoads.count();i++)
+        p.append(QString("%1").arg(peakLoads[i]));
+
+    ui->peakLoad_lineEdit->setText(p.join(", "));
+
+
+    //Update variance
     ui->variance_lineEdit->setText(QString::number(variance, 'f', 2));
 }
 
