@@ -1,0 +1,11 @@
+<RCC>
+    <qresource prefix="/">
+        <file alias="plotZoom">images/Zoom.ico</file>
+        <file alias="plotPointStyle">images/Chart-Bullseye.ico</file>
+        <file alias="plotLineStyle">images/Custom-Icon-Design-Pretty-Office-8-Line-chart.ico</file>
+        <file alias="plotRescale">images/old-zoom-best-fit.ico</file>
+        <file alias="plotBrush">images/Paint-Brush.ico</file>
+        <file alias="scrollZoom">images/Mouse-Select-Scroll.ico</file>
+        <file alias="rectangleZoom">images/Rectangle.ico</file>
+    </qresource>
+</RCC>

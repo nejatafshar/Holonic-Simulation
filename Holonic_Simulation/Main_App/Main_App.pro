@@ -4,7 +4,9 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT       += widgets printsupport
+
+CONFIG += c++11
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -39,3 +41,10 @@ else:unix: LIBS += -L$$OUT_PWD/../Simulation/ -lSimulation
 
 INCLUDEPATH += $$PWD/../Simulation
 DEPENDPATH += $$PWD/../Simulation
+
+win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../CustomPlot/release/ -lCustomPlot
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../CustomPlot/debug/ -lCustomPlot
+else:unix: LIBS += -L$$OUT_PWD/../CustomPlot/ -lCustomPlot
+
+INCLUDEPATH += $$PWD/../CustomPlot
+DEPENDPATH += $$PWD/../CustomPlot

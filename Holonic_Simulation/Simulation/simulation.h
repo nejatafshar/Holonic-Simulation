@@ -4,10 +4,13 @@
 #include "Simulation_global.h"
 
 #include <QObject>
-
 #include <QWidget>
+#include <QVector>
+#include <QElapsedTimer>
+#include <QTimer>
 
 #include "agent.h"
+#include "statistics.h"
 
 
 namespace Ui {
@@ -29,10 +32,23 @@ public:
 
 private slots:
     void on_startBut_clicked();
+    void on_initializeHolarchyBut_clicked();
 
     void updateTotalHolons();
 
+    void onSimulationFinished();
+    void setResults(QVector<uint> peakLoads, double variance, int verticalCycles);
+
+    void updateResults();
+
+
+    void on_stopBut_clicked();
+
+    void on_horizontalInteractionChkBx_toggled(bool checked);
+
 private:
+
+    void initializePlot();
 
     void initializeHolarchy(int levels, int holons);
 
@@ -45,7 +61,20 @@ private:
 
      Agent * root;
 
+     QVector<uint> peakLoads;
+     double variance;
+     int verticalCycles;
+     QTimer peakLoadPlotTimer;
 
+     QElapsedTimer elapsedTimer;
+
+     Statistics statistics;
+
+     QVector<uint> meanResources;
+     double resourceStandardDeviation;
+
+     QVector<double> meanPriorities;
+     double priorityStandardDeviation;
 
 };
 

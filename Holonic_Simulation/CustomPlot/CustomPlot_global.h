@@ -1,0 +1,12 @@
+#ifndef CUSTOMPLOT_GLOBAL_H
+#define CUSTOMPLOT_GLOBAL_H
+
+#include <QtCore/qglobal.h>
+
+#if defined(CUSTOMPLOT_LIBRARY)
+#  define CUSTOMPLOTSHARED_EXPORT Q_DECL_EXPORT
+#else
+#  define CUSTOMPLOTSHARED_EXPORT Q_DECL_IMPORT
+#endif
+
+#endif // CUSTOMPLOT_GLOBAL_H

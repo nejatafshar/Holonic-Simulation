@@ -9,6 +9,7 @@
 *.moc
 moc_*.cpp
 qrc_*.cpp
+*.rc
 ui_*.h
 Makefile
 *.exe

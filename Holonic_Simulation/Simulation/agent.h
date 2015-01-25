@@ -10,51 +10,105 @@
 class Agent : public QObject
 {
     Q_OBJECT
+
 public:
-    explicit Agent(QObject *parent = 0);
+    explicit Agent(QObject *m_parent = 0);
     ~Agent();
 
 signals:
 
-    void suggestParent(QVector<ushort> resources);
-    bool suggestSibling(int targetIndex, QVector<ushort> resources);
+    void suggestParent(QVector<uint> resources, QVector<double> priorities);
+    bool suggestSibling(int targetHolonIndex, int gettingIndex, int givingIndex);
+    void sendResultToChild(int targetHolonIndex, QVector<bool> permissions);
+    void sendInteractCommandToChilds();
+    void sendContinueCommandToChilds();
 
+    void simulationFinished();
+    void resultChanged(QVector<uint> resources, double variance, int verticalCycles);
 
 public slots:
 
 
+    void receiveSuggestFromChild(QVector<uint> resources, QVector<double> priorities);
+    bool receiveSuggestFromSibling(int givingIndex,int gettingIndex);
+    void receiveResultFromParent(QVector<bool> permissions);
+    void interactWithSiblings();
+    void continueDownwards();
 
 
 private slots:
 
-    void receiveSuggestFromChild(QVector<ushort> resources);
 
-    bool mapChildrenSuggestions(int targetIndex, QVector<ushort> resources);
 
 public :
+
 
     void addChild(Agent * agent);
 
     void start();
 
-    void receiveResultFromParent(QVector<bool> permissions, QVector<ushort> thresholds);
-    void sendResultToChildren(bool finished);
-    void interactWithSiblings();
 
-    bool receiveSuggestFromSibling(QVector<ushort> resources);
+    //Setters & Getters
+
+    QList<Agent *> children() const;
+
+    int holonIndex() const;
+    void setHolonIndex(int holonIndex);
+
+    int maxFutileCycles() const;
+    void setMaxFutileCycles(int value);
+
+    double desiredVariance() const;
+    void setDesiredVariance(double desiredVariance);
+
+    QVector<uint> resources() const;
+    void setResources(const QVector<uint> &resources);
+
+    QVector<bool> permissions() const;
+    void setPermissions(const QVector<bool> &permissions);
+
+    QVector<double> priorities() const;
+    void setPriorities(const QVector<double> &priorities);
+
+    bool stopped() const;
+    void setStopped(bool stopped);
+
+    bool horizontalInteraction() const;
+    void setHorizontalInteraction(bool horizontalInteraction);
+
+    double bestVariance() const;
+    void setBestVariance(double bestVariance);
+
+    int verticalCycles() const;
+    void setVerticalCycles(int verticalCycles);
 
 private:
 
-    int HolonIndex;
+    int getAgentWithMaxInPosition(int position, QList<Agent *> agents);
 
-    QList<Agent *> childs;
-    Agent * parent;
+private:
 
-    QVector<ushort> resources;
-    QVector<ushort> thresholds;
-    QVector<bool> permissions;
+    void shiftResource(int givingIndex);
 
-    int receivedSuggestionsFromChilds;
+    int m_holonIndex;
+
+    QList<Agent *> m_children;
+    Agent * m_parent;
+
+    QVector<bool> m_permission;
+    QVector<uint> m_resources;
+    QVector<double> m_priorities;
+
+    int m_receivedSuggestionsFromChilds;
+
+    int m_maxFutileCycles;
+    double m_desiredVariance;
+    double m_bestVariance;
+    bool m_stopped;
+    bool m_horizontalInteraction;
+    int m_verticalCycles;
+    int m_futileCycles;
+
 
 };
 
