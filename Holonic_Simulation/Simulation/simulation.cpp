@@ -138,7 +138,7 @@ void Simulation::initializeHolarchy(int levels, int holons)
     QStringList list1 = ui->agentNeeds_lineEdit->text().split(",");
     foreach(QString item, list1)
     {
-        meanResources.append(item.toUShort());
+        meanResources.append(item.toUInt());
         peakLoads[meanResources.count()-1] = 0;
     }
     resourceStandardDeviation = ui->resourceStandardDeviation_lineEdit->text().toDouble();
@@ -173,14 +173,14 @@ void Simulation::initializeHolon(Agent* parent, int holons, int level, int maxLe
         if(level==maxLevels)//set values for leafs
         {
 
-            QVector<ushort> resources;
+            QVector<uint> resources;
             QVector<double> priorities;
 
             for(int i=0; i<ResourceElements; i++)
             {
                 double val;
                 statistics.gaussianRandomGererator(meanResources[i], resourceStandardDeviation, 1, &val);
-                resources.append((ushort)val);
+                resources.append((uint)val);
                 peakLoads[i]+=resources[i];
                 statistics.gaussianRandomGererator(meanPriorities[i], priorityStandardDeviation, 1, &val);
                 priorities.append(val);
@@ -264,7 +264,7 @@ void Simulation::onSimulationFinished()
         on_stopBut_clicked();
 }
 
-void Simulation::setResults(QVector<ushort> peakLoads, double variance, int verticalCycles)
+void Simulation::setResults(QVector<uint> peakLoads, double variance, int verticalCycles)
 {
     this->peakLoads = peakLoads;
     this->variance = variance;

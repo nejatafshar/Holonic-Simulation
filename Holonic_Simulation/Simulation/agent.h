@@ -17,19 +17,19 @@ public:
 
 signals:
 
-    void suggestParent(QVector<ushort> resources, QVector<double> priorities);
+    void suggestParent(QVector<uint> resources, QVector<double> priorities);
     bool suggestSibling(int targetHolonIndex, int gettingIndex, int givingIndex);
     void sendResultToChild(int targetHolonIndex, QVector<bool> permissions);
     void sendInteractCommandToChilds();
     void sendContinueCommandToChilds();
 
     void simulationFinished();
-    void resultChanged(QVector<ushort> resources, double variance, int verticalCycles);
+    void resultChanged(QVector<uint> resources, double variance, int verticalCycles);
 
 public slots:
 
 
-    void receiveSuggestFromChild(QVector<ushort> resources, QVector<double> priorities);
+    void receiveSuggestFromChild(QVector<uint> resources, QVector<double> priorities);
     bool receiveSuggestFromSibling(int givingIndex,int gettingIndex);
     void receiveResultFromParent(QVector<bool> permissions);
     void interactWithSiblings();
@@ -61,8 +61,8 @@ public :
     double desiredVariance() const;
     void setDesiredVariance(double desiredVariance);
 
-    QVector<ushort> resources() const;
-    void setResources(const QVector<ushort> &resources);
+    QVector<uint> resources() const;
+    void setResources(const QVector<uint> &resources);
 
     QVector<bool> permissions() const;
     void setPermissions(const QVector<bool> &permissions);
@@ -96,7 +96,7 @@ private:
     Agent * m_parent;
 
     QVector<bool> m_permission;
-    QVector<ushort> m_resources;
+    QVector<uint> m_resources;
     QVector<double> m_priorities;
 
     int m_receivedSuggestionsFromChilds;

@@ -73,7 +73,7 @@ void Agent::start()
     }
 }
 
-void Agent::receiveSuggestFromChild(QVector<ushort> resources, QVector<double> priorities)
+void Agent::receiveSuggestFromChild(QVector<uint> resources, QVector<double> priorities)
 {
     m_receivedSuggestionsFromChilds++;
 
@@ -113,8 +113,8 @@ void Agent::receiveSuggestFromChild(QVector<ushort> resources, QVector<double> p
             }
             else
             {
-                QVector<ushort>::iterator it = std::max_element(m_resources.begin(), m_resources.end());
-                ushort maxResourceValue = *it;
+                QVector<uint>::iterator it = std::max_element(m_resources.begin(), m_resources.end());
+                uint maxResourceValue = *it;
                 int maxResourceIndex = m_resources.indexOf(maxResourceValue);
 
                 for(int i=0;i<ResourceElements;i++)
@@ -247,7 +247,7 @@ bool Agent::receiveSuggestFromSibling(int givingIndex,int gettingIndex)
 
 void Agent::shiftResource(int givingIndex)
 {
-    ushort exchangeAmount = 1;
+    uint exchangeAmount = 1;
 
     m_resources[givingIndex]-= exchangeAmount;
     int diff=1;
@@ -326,13 +326,13 @@ void Agent::setPriorities(const QVector<double> &priorities)
 
 int Agent::getAgentWithMaxInPosition(int position, QList<Agent *> agents)
 {
-    QVector<ushort> resources;
+    QVector<uint> resources;
     foreach(Agent * agent, agents)
     {
         resources.append(agent->resources()[position]);
     }
-    QVector<ushort>::iterator it = std::max_element(resources.begin(), resources.end());
-    ushort maxValue = *it;
+    QVector<uint>::iterator it = std::max_element(resources.begin(), resources.end());
+    uint maxValue = *it;
     return resources.indexOf(maxValue);
 }
 
@@ -346,12 +346,12 @@ void Agent::setPermissions(const QVector<bool> &permissions)
     m_permission = permissions;
 }
 
-QVector<ushort> Agent::resources() const
+QVector<uint> Agent::resources() const
 {
     return m_resources;
 }
 
-void Agent::setResources(const QVector<ushort> &resources)
+void Agent::setResources(const QVector<uint> &resources)
 {
     m_resources = resources;
 }
