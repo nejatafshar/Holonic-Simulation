@@ -758,7 +758,7 @@ void CustomPlot::updateGraphInRange(int graph_index, QCPRange range)
                     this->addItem(textLabel);
                     textLabel->setPositionAlignment(Qt::AlignTop|Qt::AlignCenter);
                     //textLabel->position->setType(QCPItemPosition::ptAxisRectRatio);
-                    textLabel->position->setCoords(x[indexes[i]],  y[indexes[i]]+((maxVal-minVal)*YmarginFactor*0.8)); // place position at center/top of axis rect
+                    textLabel->position->setCoords(x[indexes[i]],  y[indexes[i]]+((this->yAxis->range().upper-this->yAxis->range().lower)*YmarginFactor*0.5)); // place position at center/top of axis rect
 
                     if(indicateMode == 0)
                         textLabel->setText(QString("%1 , %2").arg(x[indexes[i]]).arg(y[indexes[i]]));
@@ -793,7 +793,7 @@ void CustomPlot::updateGraphInRange(int graph_index, QCPRange range)
                     this->addItem(textLabel);
                     textLabel->setPositionAlignment(Qt::AlignTop|Qt::AlignCenter);
                     //textLabel->position->setType(QCPItemPosition::ptAxisRectRatio);
-                    textLabel->position->setCoords(x[indexes[i]],  y[indexes[i]]-((maxVal-minVal)*YmarginFactor*0.8)); // place position at center/top of axis rect
+                    textLabel->position->setCoords(x[indexes[i]],  y[indexes[i]]-((this->yAxis->range().upper-this->yAxis->range().lower)*YmarginFactor*0.5)); // place position at center/top of axis rect
                     textLabel->setText(QString("%1 , %2").arg(x[indexes[i]]).arg(y[indexes[i]]));
                     //textLabel->setFont(QFont(font().family(), 16)); // make font a bit larger
 
