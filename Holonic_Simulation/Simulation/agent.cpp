@@ -14,7 +14,10 @@ Agent::Agent(QObject *parent) : QObject(parent)
 
     m_maxFutileCycles = 0;
     m_desiredVariance = 0;
+    m_bestVariance = INT_MAX;
     m_stopped = false;
+    m_verticalCycles = 0;
+    m_futileCycles = 0;
 
 
 }
@@ -85,15 +88,25 @@ void Agent::receiveSuggestFromChild(QVector<ushort> resources, QVector<double> p
         if(m_parent==NULL) // This is root
         {
 
+            m_verticalCycles++;
+
             Statistics s;
             double r[ResourceElements];
             for(int i=0;i<ResourceElements;i++)
                 r[i] = m_resources[i];
             double variance = s.getVariance(r, ResourceElements);
 
-            emit resultChanged(m_resources, variance);
+            if(variance<m_bestVariance)
+            {
+                m_bestVariance = variance;
+                m_futileCycles = 0;
+            }
+            else
+                m_futileCycles++;
 
-            if(variance<=m_desiredVariance || m_stopped)
+            emit resultChanged(m_resources, variance, m_verticalCycles);
+
+            if(variance<=m_desiredVariance || m_stopped || m_futileCycles>=m_maxFutileCycles)
             {
                 m_stopped = false;
                 emit simulationFinished();
@@ -258,6 +271,26 @@ void Agent::shiftResource(int givingIndex)
         diff++;
     }
 }
+int Agent::verticalCycles() const
+{
+    return m_verticalCycles;
+}
+
+void Agent::setVerticalCycles(int verticalCycles)
+{
+    m_verticalCycles = verticalCycles;
+}
+
+double Agent::bestVariance() const
+{
+    return m_bestVariance;
+}
+
+void Agent::setBestVariance(double bestVariance)
+{
+    m_bestVariance = bestVariance;
+}
+
 bool Agent::horizontalInteraction() const
 {
     return m_horizontalInteraction;

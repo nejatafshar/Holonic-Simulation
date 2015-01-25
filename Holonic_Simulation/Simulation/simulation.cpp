@@ -106,8 +106,10 @@ void Simulation::initializePlot()
         plot->holdMinScale = true;
         plot->holdMinScaleFactor = 0.3;
         plot->maxIndicateNum = 1;
+        plot->minIndicateNum = 1;
         plot->setHasZoomModeBut(false);
-        plot->setHasRescaleBut(false);
+
+        plot->setButtonsTransparency(50);
 
         QSettings settings;
         plot->setPenColor(0, settings.value("peakLoadPlot/penColor",QColor(rand()%245+10, rand()%245+10, rand()%245+10)).value<QColor>() );
@@ -228,6 +230,8 @@ void Simulation::on_initializeHolarchyBut_clicked()
         r[i] = peakLoads[i];
     variance = statistics.getVariance(r, ResourceElements);
 
+    verticalCycles = 0;
+
     elapsedTimer.start();
 
     updateResults();
@@ -248,12 +252,16 @@ void Simulation::onSimulationFinished()
     updateResults();
 
     peakLoadPlotTimer.stop();
+
+    if(ui->stopBut->isEnabled())
+        on_stopBut_clicked();
 }
 
-void Simulation::setResults(QVector<ushort> peakLoads, double variance)
+void Simulation::setResults(QVector<ushort> peakLoads, double variance, int verticalCycles)
 {
     this->peakLoads = peakLoads;
     this->variance = variance;
+    this->verticalCycles = verticalCycles;
 }
 
 void Simulation::updateResults()
@@ -289,6 +297,9 @@ void Simulation::updateResults()
 
     //Update variance
     ui->variance_lineEdit->setText(QString::number(variance, 'f', 2));
+
+    //Update vertical cycles
+    ui->verticalCycles_lineEdit->setText(QString::number(verticalCycles));
 }
 
 void Simulation::on_horizontalInteractionChkBx_toggled(bool checked)

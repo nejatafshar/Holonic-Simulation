@@ -24,7 +24,7 @@ signals:
     void sendContinueCommandToChilds();
 
     void simulationFinished();
-    void resultChanged(QVector<ushort> resources, double variance);
+    void resultChanged(QVector<ushort> resources, double variance, int verticalCycles);
 
 public slots:
 
@@ -76,6 +76,12 @@ public :
     bool horizontalInteraction() const;
     void setHorizontalInteraction(bool horizontalInteraction);
 
+    double bestVariance() const;
+    void setBestVariance(double bestVariance);
+
+    int verticalCycles() const;
+    void setVerticalCycles(int verticalCycles);
+
 private:
 
     int getAgentWithMaxInPosition(int position, QList<Agent *> agents);
@@ -97,8 +103,12 @@ private:
 
     int m_maxFutileCycles;
     double m_desiredVariance;
+    double m_bestVariance;
     bool m_stopped;
     bool m_horizontalInteraction;
+    int m_verticalCycles;
+    int m_futileCycles;
+
 
 };
 
