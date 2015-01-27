@@ -87,6 +87,8 @@ void Agent::receiveSuggestFromChild(QVector<uint> resources, QVector<double> pri
     {
         if(m_parent==NULL) // This is root
         {
+            for(int i=0;i< ResourceElements; i++)
+                m_priorities[i] /= m_priorities.count();
 
             m_verticalCycles++;
 
@@ -240,7 +242,12 @@ bool Agent::receiveSuggestFromSibling(int givingIndex,int gettingIndex)
     int maxPriorityIndex = m_priorities.indexOf(maxPriorityValue);
 
     if(maxPriorityIndex==gettingIndex)
+    {
+        m_priorities[givingIndex]=false;
+        m_priorities[gettingIndex]=true;
+
         return true;
+    }
     else
         return false;
 }
@@ -258,7 +265,7 @@ void Agent::shiftResource(int givingIndex)
             m_resources[givingIndex+diff]+=exchangeAmount;
             break;
         }
-        else if((givingIndex-diff)>=0 && m_resources[givingIndex+diff]<m_resources[givingIndex])
+        else if((givingIndex-diff)>=0 && m_resources[givingIndex-diff]<m_resources[givingIndex])
         {
             m_resources[givingIndex-diff]+=exchangeAmount;
             break;
