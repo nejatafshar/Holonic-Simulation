@@ -20,6 +20,7 @@ signals:
     void suggestParent(QVector<uint> resources, QVector<double> priorities);
     bool suggestSibling(int targetHolonIndex, int gettingIndex, int givingIndex);
     void sendResultToChild(int targetHolonIndex, QVector<bool> permissions);
+    void sendMakePermissionsCommandToChilds();
     void sendInteractCommandToChilds();
     void sendContinueCommandToChilds();
 
@@ -32,6 +33,7 @@ public slots:
     void receiveSuggestFromChild(QVector<uint> resources, QVector<double> priorities);
     bool receiveSuggestFromSibling(int givingIndex,int gettingIndex);
     void receiveResultFromParent(QVector<bool> permissions);
+    void makePermissions();
     void interactWithSiblings();
     void continueDownwards();
 

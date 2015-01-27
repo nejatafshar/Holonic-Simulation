@@ -47,6 +47,7 @@ void Agent::addChild(Agent *agent)
         return this->m_children[targetHolonIndex]->receiveResultFromParent(permissions);
     });
 
+    connect(this, &Agent::sendMakePermissionsCommandToChilds, agent, &Agent::makePermissions);
     connect(this, &Agent::sendInteractCommandToChilds, agent, &Agent::interactWithSiblings);
     connect(this, &Agent::sendContinueCommandToChilds, agent, &Agent::continueDownwards, Qt::QueuedConnection);
 
@@ -85,6 +86,9 @@ void Agent::receiveSuggestFromChild(QVector<uint> resources, QVector<double> pri
 
     if(m_receivedSuggestionsFromChilds == m_children.count())
     {
+        for(int i=0;i< ResourceElements; i++)
+            m_priorities[i] /= m_priorities.count();
+
         if(m_parent==NULL) // This is root
         {
 
@@ -113,14 +117,10 @@ void Agent::receiveSuggestFromChild(QVector<uint> resources, QVector<double> pri
             }
             else
             {
-                QVector<uint>::iterator it = std::max_element(m_resources.begin(), m_resources.end());
-                uint maxResourceValue = *it;
-                int maxResourceIndex = m_resources.indexOf(maxResourceValue);
-
                 for(int i=0;i<ResourceElements;i++)
                     m_permission[i]=true;
 
-                m_permission[maxResourceIndex] = false;
+                makePermissions();
 
                 continueDownwards();
             }
@@ -151,6 +151,15 @@ void Agent::receiveResultFromParent(QVector<bool> permissions)
     m_permission = permissions;
 }
 
+void Agent::makePermissions()
+{
+    QVector<uint>::iterator it = std::max_element(m_resources.begin(), m_resources.end());
+    uint maxResourceValue = *it;
+    int maxResourceIndex = m_resources.indexOf(maxResourceValue);
+
+    m_permission[maxResourceIndex] = false;
+}
+
 void Agent::continueDownwards()
 {
 
@@ -161,7 +170,19 @@ void Agent::continueDownwards()
     }
     else if(m_children.isEmpty()) //leaf
     {
-        shiftResource(m_permission.indexOf(false));
+        //Statistics s;
+        //double mean = s.getMean(m_priorities.data(), m_priorities.count());
+
+        QVector<double>::iterator it = std::max_element(m_priorities.begin(), m_priorities.end());
+        double maxPriorityValue = *it;
+        int maxPriorityIndex = m_priorities.indexOf(maxPriorityValue);
+
+        for(int i=0; i<ResourceElements;i++)
+        {
+            if(m_permission[i]==false /*&& i!=maxPriorityIndex*/)
+                shiftResource(i);
+        }
+
         emit suggestParent(m_resources, m_priorities);
         return;
     }
@@ -187,6 +208,10 @@ void Agent::continueDownwards()
         m_receivedSuggestionsFromChilds = 0;
     }
 
+    //make permissions
+
+    emit sendMakePermissionsCommandToChilds();
+
     //Interaction
     if(m_horizontalInteraction)
         emit sendInteractCommandToChilds();
@@ -197,35 +222,50 @@ void Agent::continueDownwards()
 }
 
 void Agent::interactWithSiblings()
-{
-    int gettingIndex = m_permission.indexOf(false);
+{   
 
-    QVector<double>::iterator it = std::max_element(m_priorities.begin(), m_priorities.end());
-    double maxPriorityValue = *it;
-    int maxPriorityIndex = m_priorities.indexOf(maxPriorityValue);
-
-    if(maxPriorityIndex!=gettingIndex)
-        return;
+//    Statistics s;
+//    double mean = s.getMean(m_priorities.data(), m_priorities.count());
+//    if(m_priorities[gettingIndex]<=mean)
+//        return;
 
 
-    for(int i=0;i<ResourceElements;i++)
+    foreach(Agent * agent, m_parent->children())
     {
-
-        if(i!=gettingIndex)
+        if(agent!=this)
         {
-            int agentIndex = getAgentWithMaxInPosition(i, m_parent->children());
+            int gettingIndex=-1;
+            int givingIndex=-1;
 
-            if(agentIndex != m_holonIndex)
+            QVector<bool> agentPermissions = agent->permissions();
+            double maxPriority = 0;
+            double minPriority = INT_MAX;
+            for(int i=0; i<ResourceElements;i++)
             {
-                bool result = suggestSibling(agentIndex, gettingIndex, i);
+                if(m_permission[i]==false && agentPermissions[i]==true && m_priorities[i]>maxPriority)
+                {
+                    maxPriority = m_priorities[i];
+                    gettingIndex = i;
+                }
+                else if(m_permission[i]==true && agentPermissions[i]==false && m_priorities[i]<minPriority)
+                {
+                    minPriority = m_priorities[i];
+                    givingIndex = i;
+                }
+            }
+            if(givingIndex>=0 && gettingIndex>=0)
+            {
+                bool result = suggestSibling(agent->holonIndex(), gettingIndex, givingIndex);
+
                 if(result)
                 {
                     m_permission[gettingIndex] = true;
-                    m_permission[i] = false;
+                    m_permission[givingIndex] = false;
 
                     return;
                 }
             }
+
         }
 
     }
@@ -235,12 +275,24 @@ void Agent::interactWithSiblings()
 
 bool Agent::receiveSuggestFromSibling(int givingIndex,int gettingIndex)
 {
-    QVector<double>::iterator it = std::max_element(m_priorities.begin(), m_priorities.end());
-    double maxPriorityValue = *it;
-    int maxPriorityIndex = m_priorities.indexOf(maxPriorityValue);
+//    QVector<double>::iterator it = std::max_element(m_priorities.begin(), m_priorities.end());
+//    double maxPriorityValue = *it;
+//    int maxPriorityIndex = m_priorities.indexOf(maxPriorityValue);
 
-    if(maxPriorityIndex==gettingIndex)
+//    if(maxPriorityIndex==gettingIndex)
+//        return true;
+//    else
+//        return false;
+
+    Statistics s;
+    double mean = s.getMean(m_priorities.data(), m_priorities.count());
+    if(m_priorities[givingIndex]<=m_priorities[gettingIndex])
+    {
+        m_priorities[givingIndex]=false;
+        m_priorities[gettingIndex]=true;
+
         return true;
+    }
     else
         return false;
 }
@@ -258,7 +310,7 @@ void Agent::shiftResource(int givingIndex)
             m_resources[givingIndex+diff]+=exchangeAmount;
             break;
         }
-        else if((givingIndex-diff)>=0 && m_resources[givingIndex+diff]<m_resources[givingIndex])
+        else if((givingIndex-diff)>=0 && m_resources[givingIndex-diff]<m_resources[givingIndex])
         {
             m_resources[givingIndex-diff]+=exchangeAmount;
             break;
