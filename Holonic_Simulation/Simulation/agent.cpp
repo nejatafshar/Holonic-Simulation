@@ -254,7 +254,11 @@ bool Agent::receiveSuggestFromSibling(int givingIndex,int gettingIndex)
 
 void Agent::shiftResource(int givingIndex)
 {
-    uint exchangeAmount = 1;
+    QVector<double> sortedPriorities(m_priorities);
+    std::sort(sortedPriorities.begin(), sortedPriorities.end(), std::less<double>());
+
+    uint exchangeAmount = (1.0-(((double)sortedPriorities.indexOf(m_priorities[givingIndex]))/ResourceElements))*ResourceElements+1;
+
 
     m_resources[givingIndex]-= exchangeAmount;
     int diff=1;
