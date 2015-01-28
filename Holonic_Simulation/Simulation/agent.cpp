@@ -170,16 +170,9 @@ void Agent::continueDownwards()
     }
     else if(m_children.isEmpty()) //leaf
     {
-        //Statistics s;
-        //double mean = s.getMean(m_priorities.data(), m_priorities.count());
-
-        QVector<double>::iterator it = std::max_element(m_priorities.begin(), m_priorities.end());
-        double maxPriorityValue = *it;
-        int maxPriorityIndex = m_priorities.indexOf(maxPriorityValue);
-
         for(int i=0; i<ResourceElements;i++)
         {
-            if(m_permission[i]==false /*&& i!=maxPriorityIndex*/)
+            if(m_permission[i]==false)
                 shiftResource(i);
         }
 
@@ -299,7 +292,11 @@ bool Agent::receiveSuggestFromSibling(int givingIndex,int gettingIndex)
 
 void Agent::shiftResource(int givingIndex)
 {
-    uint exchangeAmount = 1;
+    QVector<double> sortedPriorities(m_priorities);
+    std::sort(sortedPriorities.begin(), sortedPriorities.end(), std::less<double>());
+
+
+    uint exchangeAmount = (1.0-(((double)sortedPriorities.indexOf(m_priorities[givingIndex]))/ResourceElements))*ResourceElements+1;
 
     m_resources[givingIndex]-= exchangeAmount;
     int diff=1;
