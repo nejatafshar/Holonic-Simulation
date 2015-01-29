@@ -5,6 +5,7 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
+    a.setStyle("Fusion");
 
     qApp->setOrganizationName("Home");
     qApp->setApplicationName("Holonic_Simulation");
