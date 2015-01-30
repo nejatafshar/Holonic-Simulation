@@ -282,6 +282,16 @@ void Agent::shiftResource(int givingIndex)
         diff++;
     }
 }
+QVector<uint> Agent::primaryResources() const
+{
+    return m_primaryResources;
+}
+
+void Agent::setPrimaryResources(const QVector<uint> &primaryResources)
+{
+    m_primaryResources = primaryResources;
+}
+
 int Agent::verticalCycles() const
 {
     return m_verticalCycles;
@@ -365,6 +375,8 @@ QVector<uint> Agent::resources() const
 void Agent::setResources(const QVector<uint> &resources)
 {
     m_resources = resources;
+
+    setPrimaryResources(resources);
 }
 
 int Agent::maxFutileCycles() const
