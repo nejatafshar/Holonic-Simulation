@@ -199,6 +199,39 @@ void Simulation::initializeHolon(Agent* parent, int holons, int level, int maxLe
     }
 }
 
+double Simulation::getSatisfactionRate(Agent *agent)
+{
+    if(!agent->children().isEmpty())
+    {
+        double sum=0;
+        foreach(Agent * a,agent->children())
+        {
+            sum+=getSatisfactionRate(a);
+        }
+        return sum/agent->children().count();
+    }
+    else
+    {
+        QVector<uint> resources = agent->resources();
+        QVector<double> priorities = agent->priorities();
+        QVector<uint> primaryResources = agent->primaryResources();
+
+        double sum1=0;
+        double sum2=0;
+
+        for(int i=0;i<ResourceElements;i++)
+        {
+            sum1+=(1.0+( ((double)qMin(0.0,(double)((double)resources[i]-(double)primaryResources[i])))/((double)primaryResources[i]) )) * priorities[i];
+            sum2+=priorities[i];
+
+            if(resources[i]!=primaryResources[i])
+                int b =0;
+        }
+
+        return sum1/sum2;
+    }
+}
+
 void Simulation::on_startBut_clicked()
 {
     elapsedTimer.start();
@@ -261,6 +294,10 @@ void Simulation::onSimulationFinished()
 {
 
     updateResults();
+
+    //Update satisfaction rate
+    double satisfactionRate = getSatisfactionRate(root)*100;
+    ui->satisfactionRate_lineEdit->setText(QString::number(satisfactionRate,'2',2));
 
     peakLoadPlotTimer.stop();
 

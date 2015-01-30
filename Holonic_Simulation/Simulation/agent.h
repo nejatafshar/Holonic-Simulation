@@ -84,6 +84,9 @@ public :
     int verticalCycles() const;
     void setVerticalCycles(int verticalCycles);
 
+    QVector<uint> primaryResources() const;
+    void setPrimaryResources(const QVector<uint> &primaryResources);
+
 private:
 
     int getAgentWithMaxInPosition(int position, QList<Agent *> agents);
@@ -100,6 +103,8 @@ private:
     QVector<bool> m_permission;
     QVector<uint> m_resources;
     QVector<double> m_priorities;
+
+    QVector<uint> m_primaryResources;
 
     int m_receivedSuggestionsFromChilds;
 

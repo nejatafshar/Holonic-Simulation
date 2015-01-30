@@ -54,7 +54,7 @@ private:
 
     void initializeHolon(Agent* parent, int holons, int level, int maxLevel);
 
-
+    double getSatisfactionRate(Agent* agent);
 
 private:
      Ui::Simulation *ui;
