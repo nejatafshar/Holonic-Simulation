@@ -19,8 +19,8 @@
 ****************************************************************************
 **           Author: Emanuel Eichhammer                                   **
 **  Website/Contact: http://www.qcustomplot.com/                          **
-**             Date: 11.10.14                                             **
-**          Version: 1.3.0-beta                                           **
+**             Date: 27.12.14                                             **
+**          Version: 1.3.0                                                **
 ****************************************************************************/
 
 #ifndef QCUSTOMPLOT_H
@@ -416,7 +416,7 @@ class QCP_LIB_DECL QCPLayerable : public QObject
   Q_PROPERTY(bool antialiased READ antialiased WRITE setAntialiased)
   /// \endcond
 public:
-  QCPLayerable(QCustomPlot *plot, QString targetLayer="", QCPLayerable *parentLayerable=0);
+  QCPLayerable(QCustomPlot *plot, QString targetLayer=QString(), QCPLayerable *parentLayerable=0);
   ~QCPLayerable();
   
   // getters:
@@ -1253,7 +1253,7 @@ protected:
   QString mDateTimeFormat;
   Qt::TimeSpec mDateTimeSpec;
   int mNumberPrecision;
-  char mNumberFormatChar;
+  QLatin1Char mNumberFormatChar;
   bool mNumberBeautifulPowers;
   //bool mNumberMultiplyCross; // QCPAxisPainter
   // ticks and subticks:
@@ -1807,7 +1807,7 @@ public:
   QList<QCPLegend*> selectedLegends() const;
   Q_SLOT void deselectAll();
   
-  bool savePdf(const QString &fileName, bool noCosmeticPen=false, int width=0, int height=0, const QString &pdfCreator="", const QString &pdfTitle="");
+  bool savePdf(const QString &fileName, bool noCosmeticPen=false, int width=0, int height=0, const QString &pdfCreator=QString(), const QString &pdfTitle=QString());
   bool savePng(const QString &fileName, int width=0, int height=0, double scale=1.0, int quality=-1);
   bool saveJpg(const QString &fileName, int width=0, int height=0, double scale=1.0, int quality=-1);
   bool saveBmp(const QString &fileName, int width=0, int height=0, double scale=1.0);
@@ -2011,7 +2011,7 @@ public:
   QCPAxis *axis(QCPAxis::AxisType type, int index=0) const;
   QList<QCPAxis*> axes(QCPAxis::AxisTypes types) const;
   QList<QCPAxis*> axes() const;
-  QCPAxis *addAxis(QCPAxis::AxisType type);
+  QCPAxis *addAxis(QCPAxis::AxisType type, QCPAxis *axis=0);
   QList<QCPAxis*> addAxes(QCPAxis::AxisTypes types);
   bool removeAxis(QCPAxis *axis);
   QCPLayoutInset *insetLayout() const { return mInsetLayout; }
@@ -3574,6 +3574,7 @@ class QCP_LIB_DECL QCPItemPixmap : public QCPAbstractItem
   Q_PROPERTY(QPixmap pixmap READ pixmap WRITE setPixmap)
   Q_PROPERTY(bool scaled READ scaled WRITE setScaled)
   Q_PROPERTY(Qt::AspectRatioMode aspectRatioMode READ aspectRatioMode)
+  Q_PROPERTY(Qt::TransformationMode transformationMode READ transformationMode)
   Q_PROPERTY(QPen pen READ pen WRITE setPen)
   Q_PROPERTY(QPen selectedPen READ selectedPen WRITE setSelectedPen)
   /// \endcond
@@ -3585,12 +3586,13 @@ public:
   QPixmap pixmap() const { return mPixmap; }
   bool scaled() const { return mScaled; }
   Qt::AspectRatioMode aspectRatioMode() const { return mAspectRatioMode; }
+  Qt::TransformationMode transformationMode() const { return mTransformationMode; }
   QPen pen() const { return mPen; }
   QPen selectedPen() const { return mSelectedPen; }
   
   // setters;
   void setPixmap(const QPixmap &pixmap);
-  void setScaled(bool scaled, Qt::AspectRatioMode aspectRatioMode=Qt::KeepAspectRatio);
+  void setScaled(bool scaled, Qt::AspectRatioMode aspectRatioMode=Qt::KeepAspectRatio, Qt::TransformationMode transformationMode=Qt::SmoothTransformation);
   void setPen(const QPen &pen);
   void setSelectedPen(const QPen &pen);
   
@@ -3614,6 +3616,7 @@ protected:
   QPixmap mScaledPixmap;
   bool mScaled;
   Qt::AspectRatioMode mAspectRatioMode;
+  Qt::TransformationMode mTransformationMode;
   QPen mPen, mSelectedPen;
   
   // reimplemented virtual methods:
