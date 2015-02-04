@@ -12,6 +12,8 @@
 #include "agent.h"
 #include "statistics.h"
 
+#include <QCheckBox>
+
 
 namespace Ui {
 class Simulation;
@@ -76,6 +78,8 @@ private:
 
      QVector<double> meanPriorities;
      double priorityStandardDeviation;
+
+     QCheckBox rescaleChkBx;
 
 };
 

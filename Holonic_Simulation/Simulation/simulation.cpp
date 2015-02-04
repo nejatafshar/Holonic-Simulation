@@ -32,6 +32,15 @@ Simulation::Simulation(QWidget *parent) :
 
     initializePlot();
 
+    rescaleChkBx.setText("Rescale");
+    connect(&rescaleChkBx, &QCheckBox::toggled, this, [this](bool checked)->void
+    {
+        ui->peakLoadPlot->holdMaxScale = !checked;
+        ui->peakLoadPlot->holdMinScale = !checked;
+    });
+    rescaleChkBx.setChecked(false);
+    ui->peakLoadPlot->layout->addWidget(&rescaleChkBx, 0, 3, 1, 1);
+
     peakLoadPlotTimer.setInterval(30);
     connect(&peakLoadPlotTimer, &QTimer::timeout, this, &Simulation::updateResults );
 
@@ -271,16 +280,18 @@ void Simulation::on_initializeHolarchyBut_clicked()
 
     elapsedTimer.start();
 
-
+    bool temp1 = ui->peakLoadPlot->holdMaxScale;
+    bool temp2 = ui->peakLoadPlot->holdMinScale;
     ui->peakLoadPlot->holdMaxScale = false;
     ui->peakLoadPlot->holdMinScale = false;
 
     updateResults();
 
-    ui->peakLoadPlot->holdMaxScale = true;
-    ui->peakLoadPlot->holdMinScale = true;
+    ui->peakLoadPlot->holdMaxScale = temp1;
+    ui->peakLoadPlot->holdMinScale = temp2;
 
     ui->startBut->setEnabled(true);
+
 }
 
 void Simulation::updateTotalHolons()
