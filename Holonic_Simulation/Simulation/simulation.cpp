@@ -184,10 +184,10 @@ void Simulation::initializeHolon(Agent* parent, int holons, int level, int maxLe
             {
                 double val;
                 statistics.gaussianRandomGererator(meanResources[i], resourceStandardDeviation, 1, &val);
-                resources.append((uint)val);
+                resources.append((uint)qAbs(val));
                 peakLoads[i]+=resources[i];
                 statistics.gaussianRandomGererator(meanPriorities[i], priorityStandardDeviation, 1, &val);
-                priorities.append(val);
+                priorities.append(qMin((double)qAbs(val),100.0));
             }
 
             agent->setResources(resources);
