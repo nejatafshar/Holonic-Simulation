@@ -26,9 +26,9 @@ Simulation::Simulation(QWidget *parent) :
     ui->maxCycles_lineEdit->setText(settings.value("SimulationSettings/maxCycles","4000").toString());
     ui->desiredVariance_lineEdit->setText(settings.value("SimulationSettings/desiredVariance","1").toString());
     ui->agentNeeds_lineEdit->setText(settings.value("SimulationSettings/agentNeeds","100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100").toString());
-    ui->resourceStandardDeviation_lineEdit->setText(settings.value("SimulationSettings/standardDeviation","4").toString());
+    ui->resourcesStandardDeciations_lineEdit->setText(settings.value("SimulationSettings/standardDeviation","4").toString());
     ui->priorities_lineEdit->setText(settings.value("SimulationSettings/priorities","50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50").toString());
-    ui->prioritiesStandardDeviation_lineEdit->setText(settings.value("SimulationSettings/prioritiesStandardDeviation","4").toString());
+    ui->prioritiesStandardDeciations_lineEdit->setText(settings.value("SimulationSettings/prioritiesStandardDeviation","4").toString());
 
     initializePlot();
 
@@ -63,9 +63,9 @@ Simulation::~Simulation()
     settings.setValue("SimulationSettings/maxCycles",ui->maxCycles_lineEdit->text());
     settings.setValue("SimulationSettings/desiredVariance",ui->desiredVariance_lineEdit->text());
     settings.setValue("SimulationSettings/agentNeeds",ui->agentNeeds_lineEdit->text());
-    settings.setValue("SimulationSettings/standardDeviation",ui->resourceStandardDeviation_lineEdit->text());
+    settings.setValue("SimulationSettings/standardDeviation",ui->resourcesStandardDeciations_lineEdit->text());
     settings.setValue("SimulationSettings/priorities",ui->priorities_lineEdit->text());
-    settings.setValue("SimulationSettings/prioritiesStandardDeviation",ui->prioritiesStandardDeviation_lineEdit->text());
+    settings.setValue("SimulationSettings/prioritiesStandardDeviation",ui->prioritiesStandardDeciations_lineEdit->text());
 
 
     settings.setValue("peakLoadPlot/penColor",ui->peakLoadPlot->graph(0)->pen().color());
@@ -154,15 +154,25 @@ void Simulation::initializeHolarchy(int levels, int holons)
         meanResources.append(item.toUInt());
         peakLoads[meanResources.count()-1] = 0;
     }
-    resourceStandardDeviation = ui->resourceStandardDeviation_lineEdit->text().toDouble();
+    resourcesStandardDeviations.clear();
+    QStringList list2 = ui->resourcesStandardDeciations_lineEdit->text().split(",");
+    foreach(QString item, list2)
+    {
+        resourcesStandardDeviations.append(item.toDouble());
+    }
 
     meanPriorities.clear();
-    QStringList list2 = ui->priorities_lineEdit->text().split(",");
-    foreach(QString item, list2)
+    QStringList list3 = ui->priorities_lineEdit->text().split(",");
+    foreach(QString item, list3)
     {
         meanPriorities.append(item.toDouble());
     }
-    priorityStandardDeviation = ui->prioritiesStandardDeviation_lineEdit->text().toDouble();
+    prioritiesStandardDeviations.clear();
+    QStringList list4 = ui->prioritiesStandardDeciations_lineEdit->text().split(",");
+    foreach(QString item, list4)
+    {
+        prioritiesStandardDeviations.append(item.toDouble());
+    }
 
     //Make Holarchy
     initializeHolon(root, holons, 0, levels);
@@ -192,10 +202,10 @@ void Simulation::initializeHolon(Agent* parent, int holons, int level, int maxLe
             for(int i=0; i<ResourceElements; i++)
             {
                 double val;
-                statistics.gaussianRandomGererator(meanResources[i], resourceStandardDeviation, 1, &val);
+                statistics.gaussianRandomGererator(meanResources[i], resourcesStandardDeviations[i], 1, &val);
                 resources.append((uint)qAbs(val));
                 peakLoads[i]+=resources[i];
-                statistics.gaussianRandomGererator(meanPriorities[i], priorityStandardDeviation, 1, &val);
+                statistics.gaussianRandomGererator(meanPriorities[i], prioritiesStandardDeviations[i], 1, &val);
                 priorities.append(qMin((double)qAbs(val),100.0));
             }
 
@@ -237,7 +247,7 @@ double Simulation::getSatisfactionRate(Agent *agent)
                 int b =0;
         }
 
-        return sum1/sum2;
+        return sum1/(sum2!=0?sum2:1);
     }
 }
 

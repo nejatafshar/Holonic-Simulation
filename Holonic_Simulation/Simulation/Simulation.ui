@@ -117,27 +117,7 @@
             </property>
            </widget>
           </item>
-          <item row="1" column="4">
-           <widget class="QLabel" name="label_15">
-            <property name="text">
-             <string>Standard Deviation :</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="5">
-           <widget class="QLineEdit" name="resourceStandardDeviation_lineEdit">
-            <property name="maximumSize">
-             <size>
-              <width>50</width>
-              <height>16777215</height>
-             </size>
-            </property>
-            <property name="text">
-             <string>2</string>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="1" colspan="2">
+          <item row="3" column="1" colspan="2">
            <widget class="QLineEdit" name="priorities_lineEdit">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -150,34 +130,21 @@
             </property>
            </widget>
           </item>
-          <item row="2" column="0">
+          <item row="3" column="0">
            <widget class="QLabel" name="label_11">
             <property name="text">
              <string>Priorities :</string>
             </property>
            </widget>
           </item>
-          <item row="2" column="5">
-           <widget class="QLineEdit" name="prioritiesStandardDeviation_lineEdit">
-            <property name="maximumSize">
-             <size>
-              <width>50</width>
-              <height>16777215</height>
-             </size>
-            </property>
+          <item row="1" column="3">
+           <widget class="QLabel" name="label_18">
             <property name="text">
-             <string>2</string>
+             <string>KW/h</string>
             </property>
            </widget>
           </item>
-          <item row="2" column="4">
-           <widget class="QLabel" name="label_16">
-            <property name="text">
-             <string>Standard Deviation :</string>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="3">
+          <item row="3" column="3">
            <widget class="QLabel" name="label_17">
             <property name="text">
              <string>%</string>
@@ -197,10 +164,43 @@
             </property>
            </widget>
           </item>
-          <item row="1" column="3">
-           <widget class="QLabel" name="label_18">
+          <item row="2" column="1" colspan="2">
+           <widget class="QLineEdit" name="resourcesStandardDeciations_lineEdit">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+              <horstretch>1</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
             <property name="text">
-             <string>KW/h</string>
+             <string/>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="0">
+           <widget class="QLabel" name="label_21">
+            <property name="text">
+             <string>Standard Deviations :</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="label_20">
+            <property name="text">
+             <string>Standard Deviations :</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="1" colspan="2">
+           <widget class="QLineEdit" name="prioritiesStandardDeciations_lineEdit">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+              <horstretch>1</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text">
+             <string/>
             </property>
            </widget>
           </item>
@@ -403,31 +403,15 @@
           <property name="bottomMargin">
            <number>0</number>
           </property>
-          <item row="0" column="4">
+          <item row="0" column="2">
            <widget class="QLabel" name="label_19">
             <property name="text">
              <string>Satisfaction Rate :</string>
             </property>
            </widget>
           </item>
-          <item row="0" column="1">
-           <widget class="QLineEdit" name="holonInteractions_lineEdit">
-            <property name="maximumSize">
-             <size>
-              <width>150</width>
-              <height>16777215</height>
-             </size>
-            </property>
-            <property name="text">
-             <string/>
-            </property>
-            <property name="readOnly">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
           <item row="0" column="3">
-           <widget class="QLineEdit" name="totalInteractions_lineEdit">
+           <widget class="QLineEdit" name="satisfactionRate_lineEdit">
             <property name="maximumSize">
              <size>
               <width>150</width>
@@ -442,21 +426,7 @@
             </property>
            </widget>
           </item>
-          <item row="0" column="2">
-           <widget class="QLabel" name="label_8">
-            <property name="text">
-             <string>Total Interactions :</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="0">
-           <widget class="QLabel" name="label_7">
-            <property name="text">
-             <string>Holon Interactions :</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="6">
+          <item row="0" column="4">
            <spacer name="horizontalSpacer_4">
             <property name="orientation">
              <enum>Qt::Horizontal</enum>
@@ -469,8 +439,15 @@
             </property>
            </spacer>
           </item>
-          <item row="0" column="5">
-           <widget class="QLineEdit" name="satisfactionRate_lineEdit">
+          <item row="0" column="0">
+           <widget class="QLabel" name="label_9">
+            <property name="text">
+             <string>Variance :</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QLineEdit" name="variance_lineEdit">
             <property name="maximumSize">
              <size>
               <width>150</width>
@@ -532,29 +509,6 @@
            <widget class="QLabel" name="label_4">
             <property name="text">
              <string>Simulation Time :</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="6">
-           <widget class="QLabel" name="label_9">
-            <property name="text">
-             <string>Variance :</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="7">
-           <widget class="QLineEdit" name="variance_lineEdit">
-            <property name="maximumSize">
-             <size>
-              <width>150</width>
-              <height>16777215</height>
-             </size>
-            </property>
-            <property name="text">
-             <string/>
-            </property>
-            <property name="readOnly">
-             <bool>true</bool>
             </property>
            </widget>
           </item>

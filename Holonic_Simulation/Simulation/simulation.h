@@ -74,10 +74,10 @@ private:
      Statistics statistics;
 
      QVector<uint> meanResources;
-     double resourceStandardDeviation;
+     QVector<double> resourcesStandardDeviations;
 
      QVector<double> meanPriorities;
-     double priorityStandardDeviation;
+     QVector<double> prioritiesStandardDeviations;
 
      QCheckBox rescaleChkBx;
 
