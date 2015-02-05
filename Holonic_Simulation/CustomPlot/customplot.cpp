@@ -45,7 +45,7 @@ CustomPlot::CustomPlot(QWidget *parent) :
    thePlotLayout = (QGridLayout *)this->parentWidget()->layout();
 
    layout = new QGridLayout(this);
-   layout->setAlignment(Qt::AlignRight | Qt::AlignTop);
+   layout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
 
    fullscreenBut = new QPushButton(this);
    fullscreenBut->setFixedWidth(25);
@@ -112,14 +112,15 @@ CustomPlot::CustomPlot(QWidget *parent) :
    connect(scrollZoomAction,SIGNAL(triggered()),this,SLOT(setScrollZoomMode()));
    connect(rectangleZoomAction,SIGNAL(triggered()),this,SLOT(setRectangleZoomMode()));
 
-
-   layout->addWidget(fullscreenBut,0,1);
-   layout->addWidget(changeBrushBut,1,1);
-   layout->addWidget(changeLineStyleBut,2,1);
-   layout->addWidget(changePointStyleBut,3,1);
-   layout->addWidget(rescaleBut,4,1);
-   layout->addWidget(legendChkBx,0,0);
-   layout->addWidget(legendChkBx,0,0);
+   layout->addWidget(zoomModeToolButton,1,1);
+   QSpacerItem* horizontalSpacer = new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Minimum);
+   layout->addItem(horizontalSpacer, 1, 2, 1, 1);
+   layout->addWidget(legendChkBx,1,3);
+   layout->addWidget(fullscreenBut,1,4);
+   layout->addWidget(changeBrushBut,2,4);
+   layout->addWidget(changeLineStyleBut,3,4);
+   layout->addWidget(changePointStyleBut,4,4);
+   layout->addWidget(rescaleBut,5,4);
 
    connect(fullscreenBut,SIGNAL(clicked()),this,SLOT(fullscreen()));
    connect(changeBrushBut,SIGNAL(clicked()),this,SLOT(changeBrushColor()));

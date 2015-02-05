@@ -12,6 +12,8 @@
 #include "agent.h"
 #include "statistics.h"
 
+#include <QCheckBox>
+
 
 namespace Ui {
 class Simulation;
@@ -37,7 +39,7 @@ private slots:
     void updateTotalHolons();
 
     void onSimulationFinished();
-    void setResults(QVector<uint> peakLoads, double variance, int verticalCycles);
+    void setResults(QVector<double> peakLoads, double variance, int verticalCycles);
 
     void updateResults();
 
@@ -56,12 +58,13 @@ private:
 
     double getSatisfactionRate(Agent* agent);
 
+
 private:
      Ui::Simulation *ui;
 
      Agent * root;
 
-     QVector<uint> peakLoads;
+     QVector<double> peakLoads;
      double variance;
      int verticalCycles;
      QTimer peakLoadPlotTimer;
@@ -70,11 +73,13 @@ private:
 
      Statistics statistics;
 
-     QVector<uint> meanResources;
-     double resourceStandardDeviation;
+     QVector<double> meanResources;
+     QVector<double> resourcesStandardDeviations;
 
      QVector<double> meanPriorities;
-     double priorityStandardDeviation;
+     QVector<double> prioritiesStandardDeviations;
+
+     QCheckBox rescaleChkBx;
 
 };
 

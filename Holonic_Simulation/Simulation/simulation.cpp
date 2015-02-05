@@ -26,11 +26,20 @@ Simulation::Simulation(QWidget *parent) :
     ui->maxCycles_lineEdit->setText(settings.value("SimulationSettings/maxCycles","4000").toString());
     ui->desiredVariance_lineEdit->setText(settings.value("SimulationSettings/desiredVariance","1").toString());
     ui->agentNeeds_lineEdit->setText(settings.value("SimulationSettings/agentNeeds","100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100").toString());
-    ui->resourceStandardDeviation_lineEdit->setText(settings.value("SimulationSettings/standardDeviation","4").toString());
+    ui->resourcesStandardDeciations_lineEdit->setText(settings.value("SimulationSettings/standardDeviation","4").toString());
     ui->priorities_lineEdit->setText(settings.value("SimulationSettings/priorities","50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50").toString());
-    ui->prioritiesStandardDeviation_lineEdit->setText(settings.value("SimulationSettings/prioritiesStandardDeviation","4").toString());
+    ui->prioritiesStandardDeciations_lineEdit->setText(settings.value("SimulationSettings/prioritiesStandardDeviation","4").toString());
 
     initializePlot();
+
+    rescaleChkBx.setText("Rescale");
+    connect(&rescaleChkBx, &QCheckBox::toggled, this, [this](bool checked)->void
+    {
+        ui->peakLoadPlot->holdMaxScale = !checked;
+        ui->peakLoadPlot->holdMinScale = !checked;
+    });
+    rescaleChkBx.setChecked(false);
+    ui->peakLoadPlot->layout->addWidget(&rescaleChkBx, 0, 3, 1, 1);
 
     peakLoadPlotTimer.setInterval(30);
     connect(&peakLoadPlotTimer, &QTimer::timeout, this, &Simulation::updateResults );
@@ -54,9 +63,9 @@ Simulation::~Simulation()
     settings.setValue("SimulationSettings/maxCycles",ui->maxCycles_lineEdit->text());
     settings.setValue("SimulationSettings/desiredVariance",ui->desiredVariance_lineEdit->text());
     settings.setValue("SimulationSettings/agentNeeds",ui->agentNeeds_lineEdit->text());
-    settings.setValue("SimulationSettings/standardDeviation",ui->resourceStandardDeviation_lineEdit->text());
+    settings.setValue("SimulationSettings/standardDeviation",ui->resourcesStandardDeciations_lineEdit->text());
     settings.setValue("SimulationSettings/priorities",ui->priorities_lineEdit->text());
-    settings.setValue("SimulationSettings/prioritiesStandardDeviation",ui->prioritiesStandardDeviation_lineEdit->text());
+    settings.setValue("SimulationSettings/prioritiesStandardDeviation",ui->prioritiesStandardDeciations_lineEdit->text());
 
 
     settings.setValue("peakLoadPlot/penColor",ui->peakLoadPlot->graph(0)->pen().color());
@@ -142,18 +151,28 @@ void Simulation::initializeHolarchy(int levels, int holons)
     QStringList list1 = ui->agentNeeds_lineEdit->text().split(",");
     foreach(QString item, list1)
     {
-        meanResources.append(item.toUInt());
+        meanResources.append(item.toDouble());
         peakLoads[meanResources.count()-1] = 0;
     }
-    resourceStandardDeviation = ui->resourceStandardDeviation_lineEdit->text().toDouble();
+    resourcesStandardDeviations.clear();
+    QStringList list2 = ui->resourcesStandardDeciations_lineEdit->text().split(",");
+    foreach(QString item, list2)
+    {
+        resourcesStandardDeviations.append(item.toDouble());
+    }
 
     meanPriorities.clear();
-    QStringList list2 = ui->priorities_lineEdit->text().split(",");
-    foreach(QString item, list2)
+    QStringList list3 = ui->priorities_lineEdit->text().split(",");
+    foreach(QString item, list3)
     {
         meanPriorities.append(item.toDouble());
     }
-    priorityStandardDeviation = ui->prioritiesStandardDeviation_lineEdit->text().toDouble();
+    prioritiesStandardDeviations.clear();
+    QStringList list4 = ui->prioritiesStandardDeciations_lineEdit->text().split(",");
+    foreach(QString item, list4)
+    {
+        prioritiesStandardDeviations.append(item.toDouble());
+    }
 
     //Make Holarchy
     initializeHolon(root, holons, 0, levels);
@@ -177,17 +196,17 @@ void Simulation::initializeHolon(Agent* parent, int holons, int level, int maxLe
         if(level==maxLevels)//set values for leafs
         {
 
-            QVector<uint> resources;
+            QVector<double> resources;
             QVector<double> priorities;
 
             for(int i=0; i<ResourceElements; i++)
             {
                 double val;
-                statistics.gaussianRandomGererator(meanResources[i], resourceStandardDeviation, 1, &val);
-                resources.append((uint)val);
+                statistics.gaussianRandomGererator(meanResources[i], resourcesStandardDeviations[i], 1, &val);
+                resources.append(qAbs(val));
                 peakLoads[i]+=resources[i];
-                statistics.gaussianRandomGererator(meanPriorities[i], priorityStandardDeviation, 1, &val);
-                priorities.append(val);
+                statistics.gaussianRandomGererator(meanPriorities[i], prioritiesStandardDeviations[i], 1, &val);
+                priorities.append(qMin((double)qAbs(val),100.0));
             }
 
             agent->setResources(resources);
@@ -212,9 +231,9 @@ double Simulation::getSatisfactionRate(Agent *agent)
     }
     else
     {
-        QVector<uint> resources = agent->resources();
+        QVector<double> resources = agent->resources();
         QVector<double> priorities = agent->priorities();
-        QVector<uint> primaryResources = agent->primaryResources();
+        QVector<double> primaryResources = agent->primaryResources();
 
         double sum1=0;
         double sum2=0;
@@ -223,12 +242,9 @@ double Simulation::getSatisfactionRate(Agent *agent)
         {
             sum1+=(1.0+( ((double)qMin(0.0,(double)((double)resources[i]-(double)primaryResources[i])))/((double)primaryResources[i]) )) * priorities[i];
             sum2+=priorities[i];
-
-            if(resources[i]!=primaryResources[i])
-                int b =0;
         }
 
-        return sum1/sum2;
+        return sum1/(sum2!=0?sum2:1);
     }
 }
 
@@ -271,16 +287,18 @@ void Simulation::on_initializeHolarchyBut_clicked()
 
     elapsedTimer.start();
 
-
+    bool temp1 = ui->peakLoadPlot->holdMaxScale;
+    bool temp2 = ui->peakLoadPlot->holdMinScale;
     ui->peakLoadPlot->holdMaxScale = false;
     ui->peakLoadPlot->holdMinScale = false;
 
     updateResults();
 
-    ui->peakLoadPlot->holdMaxScale = true;
-    ui->peakLoadPlot->holdMinScale = true;
+    ui->peakLoadPlot->holdMaxScale = temp1;
+    ui->peakLoadPlot->holdMinScale = temp2;
 
     ui->startBut->setEnabled(true);
+
 }
 
 void Simulation::updateTotalHolons()
@@ -305,7 +323,7 @@ void Simulation::onSimulationFinished()
         on_stopBut_clicked();
 }
 
-void Simulation::setResults(QVector<uint> peakLoads, double variance, int verticalCycles)
+void Simulation::setResults(QVector<double> peakLoads, double variance, int verticalCycles)
 {
     this->peakLoads = peakLoads;
     this->variance = variance;

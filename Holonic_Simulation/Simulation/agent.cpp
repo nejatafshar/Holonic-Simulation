@@ -74,7 +74,7 @@ void Agent::start()
     }
 }
 
-void Agent::receiveSuggestFromChild(QVector<uint> resources, QVector<double> priorities)
+void Agent::receiveSuggestFromChild(QVector<double> resources, QVector<double> priorities)
 {
     m_receivedSuggestionsFromChilds++;
 
@@ -91,6 +91,8 @@ void Agent::receiveSuggestFromChild(QVector<uint> resources, QVector<double> pri
 
         if(m_parent==NULL) // This is root
         {
+            for(int i=0;i< ResourceElements; i++)
+                m_priorities[i] /= m_priorities.count();
 
             m_verticalCycles++;
 
@@ -292,40 +294,45 @@ bool Agent::receiveSuggestFromSibling(int givingIndex,int gettingIndex)
 
 void Agent::shiftResource(int givingIndex)
 {
-    QVector<double> sortedPriorities(m_priorities);
-    std::sort(sortedPriorities.begin(), sortedPriorities.end(), std::less<double>());
+    double priorityRatio = (1.0-(((double)sortedPriorities.indexOf(m_priorities[givingIndex]))/((double)ResourceElements)));
 
+//    if((m_primaryResources[givingIndex]-m_resources[givingIndex])>(0.5*priorityRatio*m_primaryResources[givingIndex]))
+//        return;
 
-    uint exchangeAmount = (1.0-(((double)sortedPriorities.indexOf(m_priorities[givingIndex]))/ResourceElements))*ResourceElements+1;
+    double exchangeAmount = priorityRatio*m_primaryResources[givingIndex];
 
-    m_resources[givingIndex]-= exchangeAmount;
+    if((m_resources[givingIndex]-exchangeAmount)<0)
+        return;
+    else
+        m_resources[givingIndex]-= exchangeAmount;
+
     int diff=1;
     while(true)
     {
-        if((givingIndex+diff)<ResourceElements && m_resources[givingIndex+diff]<m_resources[givingIndex])
+        if( ((givingIndex+diff)<ResourceElements) && (m_resources[givingIndex+diff]<m_resources[givingIndex]) && (m_priorities[givingIndex+diff]>m_priorities[givingIndex]) )
         {
             m_resources[givingIndex+diff]+=exchangeAmount;
             break;
         }
-        else if((givingIndex-diff)>=0 && m_resources[givingIndex-diff]<m_resources[givingIndex])
+        else if( ((givingIndex-diff)>=0) && (m_resources[givingIndex-diff]<m_resources[givingIndex]) && (m_priorities[givingIndex-diff]>m_priorities[givingIndex]) )
         {
             m_resources[givingIndex-diff]+=exchangeAmount;
             break;
         }
         else if((givingIndex+diff)>=ResourceElements && (givingIndex-diff)<0)
         {
-            m_resources[0]+=exchangeAmount;
+            m_resources[(((double)qrand())/((double)RAND_MAX))*ResourceElements]+=exchangeAmount;
             break;
         }
         diff++;
     }
 }
-QVector<uint> Agent::primaryResources() const
+QVector<double> Agent::primaryResources() const
 {
     return m_primaryResources;
 }
 
-void Agent::setPrimaryResources(const QVector<uint> &primaryResources)
+void Agent::setPrimaryResources(const QVector<double> &primaryResources)
 {
     m_primaryResources = primaryResources;
 }
@@ -381,17 +388,21 @@ QVector<double> Agent::priorities() const
 void Agent::setPriorities(const QVector<double> &priorities)
 {
     m_priorities = priorities;
+
+    sortedPriorities = m_priorities;
+    std::sort(sortedPriorities.begin(), sortedPriorities.end(), std::less<double>());
+
 }
 
 int Agent::getAgentWithMaxInPosition(int position, QList<Agent *> agents)
 {
-    QVector<uint> resources;
+    QVector<double> resources;
     foreach(Agent * agent, agents)
     {
         resources.append(agent->resources()[position]);
     }
-    QVector<uint>::iterator it = std::max_element(resources.begin(), resources.end());
-    uint maxValue = *it;
+    QVector<double>::iterator it = std::max_element(resources.begin(), resources.end());
+    double maxValue = *it;
     return resources.indexOf(maxValue);
 }
 
@@ -405,12 +416,12 @@ void Agent::setPermissions(const QVector<bool> &permissions)
     m_permission = permissions;
 }
 
-QVector<uint> Agent::resources() const
+QVector<double> Agent::resources() const
 {
     return m_resources;
 }
 
-void Agent::setResources(const QVector<uint> &resources)
+void Agent::setResources(const QVector<double> &resources)
 {
     m_resources = resources;
 

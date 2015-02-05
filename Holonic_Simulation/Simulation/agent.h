@@ -17,7 +17,7 @@ public:
 
 signals:
 
-    void suggestParent(QVector<uint> resources, QVector<double> priorities);
+    void suggestParent(QVector<double> resources, QVector<double> priorities);
     bool suggestSibling(int targetHolonIndex, int gettingIndex, int givingIndex);
     void sendResultToChild(int targetHolonIndex, QVector<bool> permissions);
     void sendMakePermissionsCommandToChilds();
@@ -25,12 +25,12 @@ signals:
     void sendContinueCommandToChilds();
 
     void simulationFinished();
-    void resultChanged(QVector<uint> resources, double variance, int verticalCycles);
+    void resultChanged(QVector<double> resources, double variance, int verticalCycles);
 
 public slots:
 
 
-    void receiveSuggestFromChild(QVector<uint> resources, QVector<double> priorities);
+    void receiveSuggestFromChild(QVector<double> resources, QVector<double> priorities);
     bool receiveSuggestFromSibling(int givingIndex,int gettingIndex);
     void receiveResultFromParent(QVector<bool> permissions);
     void makePermissions();
@@ -63,8 +63,8 @@ public :
     double desiredVariance() const;
     void setDesiredVariance(double desiredVariance);
 
-    QVector<uint> resources() const;
-    void setResources(const QVector<uint> &resources);
+    QVector<double> resources() const;
+    void setResources(const QVector<double> &resources);
 
     QVector<bool> permissions() const;
     void setPermissions(const QVector<bool> &permissions);
@@ -84,8 +84,8 @@ public :
     int verticalCycles() const;
     void setVerticalCycles(int verticalCycles);
 
-    QVector<uint> primaryResources() const;
-    void setPrimaryResources(const QVector<uint> &primaryResources);
+    QVector<double> primaryResources() const;
+    void setPrimaryResources(const QVector<double> &primaryResources);
 
 private:
 
@@ -101,10 +101,11 @@ private:
     Agent * m_parent;
 
     QVector<bool> m_permission;
-    QVector<uint> m_resources;
+    QVector<double> m_resources;
     QVector<double> m_priorities;
 
-    QVector<uint> m_primaryResources;
+    QVector<double> sortedPriorities;
+    QVector<double> m_primaryResources;
 
     int m_receivedSuggestionsFromChilds;
 
