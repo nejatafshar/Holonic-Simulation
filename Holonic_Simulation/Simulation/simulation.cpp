@@ -23,12 +23,12 @@ Simulation::Simulation(QWidget *parent) :
     QSettings settings;
     ui->levels_lineEdit->setText(settings.value("SimulationSettings/levels","2").toString());
     ui->holons_lineEdit->setText(settings.value("SimulationSettings/holons","20").toString());
-    ui->maxCycles_lineEdit->setText(settings.value("SimulationSettings/maxCycles","4000").toString());
+    ui->maxCycles_lineEdit->setText(settings.value("SimulationSettings/maxCycles","50").toString());
     ui->desiredVariance_lineEdit->setText(settings.value("SimulationSettings/desiredVariance","1").toString());
-    ui->agentNeeds_lineEdit->setText(settings.value("SimulationSettings/agentNeeds","100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100").toString());
-    ui->resourcesStandardDeciations_lineEdit->setText(settings.value("SimulationSettings/standardDeviation","4").toString());
+    ui->agentNeeds_lineEdit->setText(settings.value("SimulationSettings/agentNeeds","10.5,9.7,9.1,8.9,8.6,8.7,8.9,9.4,10.7,11.8,12.1,12.2,12.1,11.8,11.7,11.7,12.2,13.4,12.9,12.8,12.6,12.4,11.7,10.9").toString());
+    ui->resourcesStandardDeciations_lineEdit->setText(settings.value("SimulationSettings/standardDeviation","12,11.1,10.5,10.2,9.9,10,10.2,10.8,12.3,13.6,13.9,14.1,13.9,13.6,13.4,13.4,14.1,15.4,14.8,14.7,14.5,14.2,13.4,12.5").toString());
     ui->priorities_lineEdit->setText(settings.value("SimulationSettings/priorities","50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50").toString());
-    ui->prioritiesStandardDeciations_lineEdit->setText(settings.value("SimulationSettings/prioritiesStandardDeviation","4").toString());
+    ui->prioritiesStandardDeciations_lineEdit->setText(settings.value("SimulationSettings/prioritiesStandardDeviation","4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4").toString());
 
     initializePlot();
 
