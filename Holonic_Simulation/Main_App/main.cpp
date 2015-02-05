@@ -7,7 +7,7 @@ int main(int argc, char *argv[])
 
     a.setStyle("Fusion");
 
-    qApp->setOrganizationName("Home");
+    qApp->setOrganizationName("University");
     qApp->setApplicationName("Holonic_Simulation");
 
     MainWindow w;
