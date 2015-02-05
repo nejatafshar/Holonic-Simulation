@@ -39,7 +39,7 @@ private slots:
     void updateTotalHolons();
 
     void onSimulationFinished();
-    void setResults(QVector<uint> peakLoads, double variance, int verticalCycles);
+    void setResults(QVector<double> peakLoads, double variance, int verticalCycles);
 
     void updateResults();
 
@@ -64,7 +64,7 @@ private:
 
      Agent * root;
 
-     QVector<uint> peakLoads;
+     QVector<double> peakLoads;
      double variance;
      int verticalCycles;
      QTimer peakLoadPlotTimer;
@@ -73,7 +73,7 @@ private:
 
      Statistics statistics;
 
-     QVector<uint> meanResources;
+     QVector<double> meanResources;
      QVector<double> resourcesStandardDeviations;
 
      QVector<double> meanPriorities;

@@ -151,7 +151,7 @@ void Simulation::initializeHolarchy(int levels, int holons)
     QStringList list1 = ui->agentNeeds_lineEdit->text().split(",");
     foreach(QString item, list1)
     {
-        meanResources.append(item.toUInt());
+        meanResources.append(item.toDouble());
         peakLoads[meanResources.count()-1] = 0;
     }
     resourcesStandardDeviations.clear();
@@ -196,14 +196,14 @@ void Simulation::initializeHolon(Agent* parent, int holons, int level, int maxLe
         if(level==maxLevels)//set values for leafs
         {
 
-            QVector<uint> resources;
+            QVector<double> resources;
             QVector<double> priorities;
 
             for(int i=0; i<ResourceElements; i++)
             {
                 double val;
                 statistics.gaussianRandomGererator(meanResources[i], resourcesStandardDeviations[i], 1, &val);
-                resources.append((uint)qAbs(val));
+                resources.append(qAbs(val));
                 peakLoads[i]+=resources[i];
                 statistics.gaussianRandomGererator(meanPriorities[i], prioritiesStandardDeviations[i], 1, &val);
                 priorities.append(qMin((double)qAbs(val),100.0));
@@ -231,9 +231,9 @@ double Simulation::getSatisfactionRate(Agent *agent)
     }
     else
     {
-        QVector<uint> resources = agent->resources();
+        QVector<double> resources = agent->resources();
         QVector<double> priorities = agent->priorities();
-        QVector<uint> primaryResources = agent->primaryResources();
+        QVector<double> primaryResources = agent->primaryResources();
 
         double sum1=0;
         double sum2=0;
@@ -242,9 +242,6 @@ double Simulation::getSatisfactionRate(Agent *agent)
         {
             sum1+=(1.0+( ((double)qMin(0.0,(double)((double)resources[i]-(double)primaryResources[i])))/((double)primaryResources[i]) )) * priorities[i];
             sum2+=priorities[i];
-
-            if(resources[i]!=primaryResources[i])
-                int b =0;
         }
 
         return sum1/(sum2!=0?sum2:1);
@@ -326,7 +323,7 @@ void Simulation::onSimulationFinished()
         on_stopBut_clicked();
 }
 
-void Simulation::setResults(QVector<uint> peakLoads, double variance, int verticalCycles)
+void Simulation::setResults(QVector<double> peakLoads, double variance, int verticalCycles)
 {
     this->peakLoads = peakLoads;
     this->variance = variance;
