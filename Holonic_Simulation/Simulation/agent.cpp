@@ -155,8 +155,8 @@ void Agent::receiveResultFromParent(QVector<bool> permissions)
 
 void Agent::makePermissions()
 {
-    QVector<uint>::iterator it = std::max_element(m_resources.begin(), m_resources.end());
-    uint maxResourceValue = *it;
+    QVector<double>::iterator it = std::max_element(m_resources.begin(), m_resources.end());
+    double maxResourceValue = *it;
     int maxResourceIndex = m_resources.indexOf(maxResourceValue);
 
     m_permission[maxResourceIndex] = false;
