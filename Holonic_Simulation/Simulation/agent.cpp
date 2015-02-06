@@ -296,7 +296,7 @@ void Agent::shiftResource(int givingIndex)
 {
     double priorityRatio = (1.0-(((double)sortedPriorities.indexOf(m_priorities[givingIndex]))/((double)ResourceElements)));
 
-    if((m_primaryResources[givingIndex]-m_resources[givingIndex])>((0.5+priorityRatio/2.0)*m_primaryResources[givingIndex]))
+    if((m_primaryResources[givingIndex]-m_resources[givingIndex])>((priorityRatio)*m_primaryResources[givingIndex]))
         return;
 
     double exchangeAmount = priorityRatio*m_primaryResources[givingIndex];
