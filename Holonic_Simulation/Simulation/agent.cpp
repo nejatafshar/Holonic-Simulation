@@ -349,7 +349,7 @@ void Agent::shiftResource(int givingIndex)
         }
         else if((givingIndex+diff)>=ResourceElements && (givingIndex-diff)<0)
         {
-            m_resources[(((double)qrand()-1.0)/((double)RAND_MAX))*ResourceElements]+=exchangeAmount;
+            //m_resources[(((double)qrand()-1.0)/((double)RAND_MAX))*ResourceElements]+=exchangeAmount;
             break;
         }
         diff++;
