@@ -369,7 +369,7 @@ void Simulation::updateResults()
 
 
     //Update variance
-    ui->variance_lineEdit->setText(QString::number(variance, 'f', 2));
+    ui->variance_lineEdit->setText(QLocale::c().toString(variance, 'f', 0));
 
     //Update vertical cycles
     ui->verticalCycles_lineEdit->setText(QString::number(verticalCycles));
