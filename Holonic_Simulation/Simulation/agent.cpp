@@ -1,7 +1,5 @@
 #include "agent.h"
 
-#include "statistics.h"
-
 Agent::Agent(QObject *parent) : QObject(parent)
 {
     m_parent = qobject_cast<Agent *>(parent);
@@ -123,11 +121,10 @@ void Agent::receiveSuggestFromChild(QVector<double> resources, QVector<double> p
 
             m_verticalCycles++;
 
-            Statistics s;
             double r[ResourceElements];
             for(int i=0;i<ResourceElements;i++)
                 r[i] = m_resources[i];
-            double variance = s.getVariance(r, ResourceElements);
+            double variance = statistics.getVariance(r, ResourceElements);
 
             if(variance<m_bestVariance)
             {
@@ -183,11 +180,15 @@ void Agent::receiveResultFromParent(QVector<bool> permissions)
 
 void Agent::makePermissions()
 {
-    QVector<double>::iterator it = std::max_element(m_resources.begin(), m_resources.end());
-    double maxResourceValue = *it;
-    int maxResourceIndex = m_resources.indexOf(maxResourceValue);
+    double mean = statistics.getMean(m_resources.data(), m_resources.count());
 
-    m_permission[maxResourceIndex] = false;
+    for(int i=0;i<ResourceElements;i++)
+    {
+        if(m_resources[i]>mean)
+            m_permission[i] = false;
+        else
+            m_permission[i] = true;
+    }
 }
 
 void Agent::continueDownwards()
@@ -212,14 +213,30 @@ void Agent::continueDownwards()
 
 
     //Deciding about permissions and sending results to children
-    int resourceIndex = m_permission.indexOf(false);
-    int agentIndex = getAgentWithMaxInPosition(resourceIndex, m_children);
+    //int resourceIndex = m_permission.indexOf(false);
+    //int agentIndex = getAgentWithMaxInPosition(resourceIndex, m_children);
+
+    QVector<double> means;
+    for(int i=0;i<ResourceElements;i++)
+    {
+        QVector<double> resources;
+        foreach(Agent * agent, m_children)
+        {
+            resources.append(agent->resources()[i]);
+        }
+        means.append(statistics.getMean(resources.data(), resources.count()));
+    }
+
     for(int i=0;i<m_children.count();i++)
     {
         QVector<bool> permissions;
         permissions.insert(0, ResourceElements, true);
-        if(i==agentIndex)
-            permissions[resourceIndex] = false;
+
+        for(int j=0;j<ResourceElements;j++)
+        {
+            if((m_permission[j]==false) && (m_children[i]->resources()[j]>means[j]) )
+                permissions[j] = false;
+        }
 
         emit sendResultToChild(i, permissions);
     }
@@ -233,7 +250,7 @@ void Agent::continueDownwards()
 
     //make permissions
 
-    emit sendMakePermissionsCommandToChilds();
+    //emit sendMakePermissionsCommandToChilds();
 
     //Interaction
     if(m_horizontalInteraction)
@@ -247,8 +264,7 @@ void Agent::continueDownwards()
 void Agent::interactWithSiblings()
 {   
 
-//    Statistics s;
-//    double mean = s.getMean(m_priorities.data(), m_priorities.count());
+//    double mean = statistics.getMean(m_priorities.data(), m_priorities.count());
 //    if(m_priorities[gettingIndex]<=mean)
 //        return;
 
@@ -298,8 +314,7 @@ void Agent::interactWithSiblings()
 
 bool Agent::receiveSuggestFromSibling(int givingIndex,int gettingIndex)
 {
-//    Statistics s;
-//    double mean = s.getMean(m_priorities.data(), m_priorities.count());
+//    double mean = statistics.getMean(m_priorities.data(), m_priorities.count());
     if((m_permission[gettingIndex]==false) && (m_priorities[givingIndex]<=m_priorities[gettingIndex]))
     {
         m_permission[givingIndex]=false;
@@ -318,7 +333,7 @@ void Agent::shiftResource(int givingIndex)
     if((m_primaryResources[givingIndex]-m_resources[givingIndex])>((priorityRatio)*m_primaryResources[givingIndex]))
         return;
 
-    double exchangeAmount = priorityRatio*m_primaryResources[givingIndex];
+    double exchangeAmount = 0.1*priorityRatio*m_primaryResources[givingIndex];
 
     if((m_resources[givingIndex]-exchangeAmount)<0)
         return;
@@ -341,6 +356,28 @@ void Agent::shiftResource(int givingIndex)
         else if((givingIndex+diff)>=ResourceElements && (givingIndex-diff)<0)
         {
             //m_resources[(((double)qrand()-1.0)/((double)RAND_MAX))*ResourceElements]+=exchangeAmount;
+            diff=1;
+            while(true)
+            {
+                if( ((givingIndex+diff)<ResourceElements) && (m_resources[givingIndex+diff]<m_resources[givingIndex]) && (m_priorities[givingIndex+diff]>m_priorities[givingIndex]) )
+                {
+                    m_resources[givingIndex+diff]+=exchangeAmount;
+                    break;
+                }
+                else if( ((givingIndex-diff)>=0) && (m_resources[givingIndex-diff]<m_resources[givingIndex]) && (m_priorities[givingIndex-diff]>m_priorities[givingIndex]) )
+                {
+                    m_resources[givingIndex-diff]+=exchangeAmount;
+                    break;
+                }
+                else if((givingIndex+diff)>=ResourceElements && (givingIndex-diff)<0)
+                {
+                    m_resources[givingIndex+1<=ResourceElements?givingIndex+1:givingIndex-1]+=exchangeAmount;
+                    break;
+                }
+                diff++;
+            }
+
+
             break;
         }
         diff++;

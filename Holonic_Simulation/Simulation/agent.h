@@ -5,6 +5,8 @@
 
 #include <QVector>
 
+#include "statistics.h"
+
 #define ResourceElements 24
 
 class Agent : public QObject
@@ -119,6 +121,7 @@ private:
     int m_verticalCycles;
     int m_futileCycles;
 
+    Statistics statistics;
 
 };
 
