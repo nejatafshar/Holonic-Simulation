@@ -5,6 +5,8 @@
 
 #include <QVector>
 
+#include "statistics.h"
+
 #define ResourceElements 24
 
 class Agent : public QObject
@@ -20,6 +22,7 @@ signals:
     void suggestParent(QVector<double> resources, QVector<double> priorities);
     bool suggestSibling(int targetHolonIndex, int gettingIndex, int givingIndex);
     void sendResultToChild(int targetHolonIndex, QVector<bool> permissions);
+    void sendMakePermissionsCommandToChilds();
     void sendInteractCommandToChilds();
     void sendContinueCommandToChilds();
 
@@ -32,6 +35,7 @@ public slots:
     void receiveSuggestFromChild(QVector<double> resources, QVector<double> priorities);
     bool receiveSuggestFromSibling(int givingIndex,int gettingIndex);
     void receiveResultFromParent(QVector<bool> permissions);
+    void makePermissions();
     void interactWithSiblings();
     void continueDownwards();
 
@@ -46,6 +50,8 @@ public :
     void addChild(Agent * agent);
 
     void start();
+
+    void reset();
 
 
     //Setters & Getters
@@ -115,6 +121,7 @@ private:
     int m_verticalCycles;
     int m_futileCycles;
 
+    Statistics statistics;
 
 };
 

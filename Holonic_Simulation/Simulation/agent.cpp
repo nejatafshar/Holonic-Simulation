@@ -1,7 +1,5 @@
 #include "agent.h"
 
-#include "statistics.h"
-
 Agent::Agent(QObject *parent) : QObject(parent)
 {
     m_parent = qobject_cast<Agent *>(parent);
@@ -47,6 +45,7 @@ void Agent::addChild(Agent *agent)
         return this->m_children[targetHolonIndex]->receiveResultFromParent(permissions);
     });
 
+    connect(this, &Agent::sendMakePermissionsCommandToChilds, agent, &Agent::makePermissions);
     connect(this, &Agent::sendInteractCommandToChilds, agent, &Agent::interactWithSiblings);
     connect(this, &Agent::sendContinueCommandToChilds, agent, &Agent::continueDownwards, Qt::QueuedConnection);
 
@@ -73,6 +72,33 @@ void Agent::start()
     }
 }
 
+void Agent::reset()
+{
+
+    m_receivedSuggestionsFromChilds =0;
+
+    m_maxFutileCycles = 0;
+    m_desiredVariance = 0;
+    m_bestVariance = INT_MAX;
+    m_stopped = false;
+    m_verticalCycles = 0;
+    m_futileCycles = 0;
+
+    if(m_children.isEmpty())
+        setResources(m_primaryResources);
+    else
+    {
+        for(int i=0;i<ResourceElements;i++)
+        {
+            m_resources[i]=0;
+            m_priorities[i]=0;
+        }
+
+        foreach(Agent * agent, m_children)
+            agent->reset();
+    }
+}
+
 void Agent::receiveSuggestFromChild(QVector<double> resources, QVector<double> priorities)
 {
     m_receivedSuggestionsFromChilds++;
@@ -85,6 +111,9 @@ void Agent::receiveSuggestFromChild(QVector<double> resources, QVector<double> p
 
     if(m_receivedSuggestionsFromChilds == m_children.count())
     {
+        for(int i=0;i< ResourceElements; i++)
+            m_priorities[i] /= m_priorities.count();
+
         if(m_parent==NULL) // This is root
         {
             for(int i=0;i< ResourceElements; i++)
@@ -92,11 +121,10 @@ void Agent::receiveSuggestFromChild(QVector<double> resources, QVector<double> p
 
             m_verticalCycles++;
 
-            Statistics s;
             double r[ResourceElements];
             for(int i=0;i<ResourceElements;i++)
                 r[i] = m_resources[i];
-            double variance = s.getVariance(r, ResourceElements);
+            double variance = statistics.getVariance(r, ResourceElements);
 
             if(variance<m_bestVariance)
             {
@@ -111,18 +139,15 @@ void Agent::receiveSuggestFromChild(QVector<double> resources, QVector<double> p
             if(variance<=m_desiredVariance || m_stopped || m_futileCycles>=m_maxFutileCycles)
             {
                 m_stopped = false;
+
                 emit simulationFinished();
             }
             else
             {
-                QVector<double>::iterator it = std::max_element(m_resources.begin(), m_resources.end());
-                double maxResourceValue = *it;
-                int maxResourceIndex = m_resources.indexOf(maxResourceValue);
-
                 for(int i=0;i<ResourceElements;i++)
                     m_permission[i]=true;
 
-                m_permission[maxResourceIndex] = false;
+                makePermissions();
 
                 continueDownwards();
             }
@@ -153,6 +178,19 @@ void Agent::receiveResultFromParent(QVector<bool> permissions)
     m_permission = permissions;
 }
 
+void Agent::makePermissions()
+{
+    double mean = statistics.getMean(m_resources.data(), m_resources.count());
+
+    for(int i=0;i<ResourceElements;i++)
+    {
+        if(m_resources[i]>mean)
+            m_permission[i] = false;
+        else
+            m_permission[i] = true;
+    }
+}
+
 void Agent::continueDownwards()
 {
 
@@ -163,21 +201,39 @@ void Agent::continueDownwards()
     }
     else if(m_children.isEmpty()) //leaf
     {
-        shiftResource(m_permission.indexOf(false));
+        for(int i=0; i<ResourceElements;i++)
+        {
+            if(m_permission[i]==false)
+                shiftResource(i);
+        }
+
         emit suggestParent(m_resources, m_priorities);
         return;
     }
 
 
     //Deciding about permissions and sending results to children
-    int resourceIndex = m_permission.indexOf(false);
-    int agentIndex = getAgentWithMaxInPosition(resourceIndex, m_children);
+    QVector<double> means;
+    for(int i=0;i<ResourceElements;i++)
+    {
+        QVector<double> resources;
+        foreach(Agent * agent, m_children)
+        {
+            resources.append(agent->resources()[i]);
+        }
+        means.append(statistics.getMean(resources.data(), resources.count()));
+    }
+
     for(int i=0;i<m_children.count();i++)
     {
         QVector<bool> permissions;
         permissions.insert(0, ResourceElements, true);
-        if(i==agentIndex)
-            permissions[resourceIndex] = false;
+
+        for(int j=0;j<ResourceElements;j++)
+        {
+            if((m_permission[j]==false) && (m_children[i]->resources()[j]>means[j]) )
+                permissions[j] = false;
+        }
 
         emit sendResultToChild(i, permissions);
     }
@@ -189,6 +245,10 @@ void Agent::continueDownwards()
         m_receivedSuggestionsFromChilds = 0;
     }
 
+    //make permissions
+
+    //emit sendMakePermissionsCommandToChilds();
+
     //Interaction
     if(m_horizontalInteraction)
         emit sendInteractCommandToChilds();
@@ -199,35 +259,43 @@ void Agent::continueDownwards()
 }
 
 void Agent::interactWithSiblings()
-{
-    int gettingIndex = m_permission.indexOf(false);
-
-    QVector<double>::iterator it = std::max_element(m_priorities.begin(), m_priorities.end());
-    double maxPriorityValue = *it;
-    int maxPriorityIndex = m_priorities.indexOf(maxPriorityValue);
-
-    if(maxPriorityIndex!=gettingIndex)
-        return;
-
-
-    for(int i=0;i<ResourceElements;i++)
+{   
+    foreach(Agent * agent, m_parent->children())
     {
-
-        if(i!=gettingIndex)
+        if(agent!=this)
         {
-            int agentIndex = getAgentWithMaxInPosition(i, m_parent->children());
+            int gettingIndex=-1;
+            int givingIndex=-1;
 
-            if(agentIndex != m_holonIndex)
+            QVector<bool> agentPermissions = agent->permissions();
+            double maxPriority = 0;
+            double minPriority = INT_MAX;
+            for(int i=0; i<ResourceElements;i++)
             {
-                bool result = suggestSibling(agentIndex, gettingIndex, i);
+                if(m_permission[i]==false && agentPermissions[i]==true && m_priorities[i]>maxPriority)
+                {
+                    maxPriority = m_priorities[i];
+                    gettingIndex = i;
+                }
+                else if(m_permission[i]==true && agentPermissions[i]==false && m_priorities[i]<minPriority)
+                {
+                    minPriority = m_priorities[i];
+                    givingIndex = i;
+                }
+            }
+            if(givingIndex>=0 && gettingIndex>=0)
+            {
+                bool result = suggestSibling(agent->holonIndex(), gettingIndex, givingIndex);
+
                 if(result)
                 {
                     m_permission[gettingIndex] = true;
-                    m_permission[i] = false;
+                    m_permission[givingIndex] = false;
 
                     return;
                 }
             }
+
         }
 
     }
@@ -237,14 +305,10 @@ void Agent::interactWithSiblings()
 
 bool Agent::receiveSuggestFromSibling(int givingIndex,int gettingIndex)
 {
-    QVector<double>::iterator it = std::max_element(m_priorities.begin(), m_priorities.end());
-    double maxPriorityValue = *it;
-    int maxPriorityIndex = m_priorities.indexOf(maxPriorityValue);
-
-    if(maxPriorityIndex==gettingIndex)
+    if((m_permission[gettingIndex]==false) && (m_priorities[givingIndex]<=m_priorities[gettingIndex]))
     {
-        m_priorities[givingIndex]=false;
-        m_priorities[gettingIndex]=true;
+        m_permission[givingIndex]=false;
+        m_permission[gettingIndex]=true;
 
         return true;
     }
@@ -256,10 +320,10 @@ void Agent::shiftResource(int givingIndex)
 {
     double priorityRatio = (1.0-(((double)sortedPriorities.indexOf(m_priorities[givingIndex]))/((double)ResourceElements)));
 
-    if((m_primaryResources[givingIndex]-m_resources[givingIndex])>((0.5+priorityRatio/2.0)*m_primaryResources[givingIndex]))
+    if((m_primaryResources[givingIndex]-m_resources[givingIndex])>((priorityRatio)*m_primaryResources[givingIndex]))
         return;
 
-    double exchangeAmount = priorityRatio*m_primaryResources[givingIndex];
+    double exchangeAmount = 0.1*priorityRatio*m_primaryResources[givingIndex];
 
     if((m_resources[givingIndex]-exchangeAmount)<0)
         return;
@@ -281,7 +345,29 @@ void Agent::shiftResource(int givingIndex)
         }
         else if((givingIndex+diff)>=ResourceElements && (givingIndex-diff)<0)
         {
-            m_resources[(((double)qrand())/((double)RAND_MAX))*ResourceElements]+=exchangeAmount;
+            //m_resources[(((double)qrand()-1.0)/((double)RAND_MAX))*ResourceElements]+=exchangeAmount;
+            diff=1;
+            while(true)
+            {
+                if( ((givingIndex+diff)<ResourceElements) && (m_resources[givingIndex+diff]<m_resources[givingIndex]) && (m_priorities[givingIndex+diff]>m_priorities[givingIndex]) )
+                {
+                    m_resources[givingIndex+diff]+=exchangeAmount;
+                    break;
+                }
+                else if( ((givingIndex-diff)>=0) && (m_resources[givingIndex-diff]<m_resources[givingIndex]) && (m_priorities[givingIndex-diff]>m_priorities[givingIndex]) )
+                {
+                    m_resources[givingIndex-diff]+=exchangeAmount;
+                    break;
+                }
+                else if((givingIndex+diff)>=ResourceElements && (givingIndex-diff)<0)
+                {
+                    m_resources[givingIndex+1<=ResourceElements?givingIndex+1:givingIndex-1]+=exchangeAmount;
+                    break;
+                }
+                diff++;
+            }
+
+
             break;
         }
         diff++;
@@ -327,7 +413,7 @@ void Agent::setHorizontalInteraction(bool horizontalInteraction)
     m_horizontalInteraction = horizontalInteraction;
 
     foreach(Agent * agent, m_children)
-        agent->setHorizontalInteraction(false);
+        agent->setHorizontalInteraction(horizontalInteraction);
 }
 
 bool Agent::stopped() const
