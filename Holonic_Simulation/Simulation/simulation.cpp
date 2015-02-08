@@ -320,8 +320,8 @@ void Simulation::onSimulationFinished()
     updateResults();
 
     //Update satisfaction rate
-    double satisfactionRate = getSatisfactionRate(root)*100;
-    ui->satisfactionRate_lineEdit->setText(QString::number(satisfactionRate,'2',2));
+//    double satisfactionRate = getSatisfactionRate(root)*100;
+//    ui->satisfactionRate_lineEdit->setText(QString::number(satisfactionRate,'2',2));
 
     peakLoadPlotTimer.stop();
 
