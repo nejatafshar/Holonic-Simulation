@@ -21,10 +21,10 @@ Simulation::Simulation(QWidget *parent) :
     variance = 0;
 
     QSettings settings;
-    ui->levels_lineEdit->setText(settings.value("SimulationSettings/levels","2").toString());
+    ui->levels_lineEdit->setText(settings.value("SimulationSettings/levels","3").toString());
     ui->holons_lineEdit->setText(settings.value("SimulationSettings/holons","20").toString());
-    ui->maxCycles_lineEdit->setText(settings.value("SimulationSettings/maxCycles","50").toString());
-    ui->desiredVariance_lineEdit->setText(settings.value("SimulationSettings/desiredVariance","1").toString());
+    ui->maxCycles_lineEdit->setText(settings.value("SimulationSettings/maxCycles","100").toString());
+    ui->desiredVariance_lineEdit->setText(settings.value("SimulationSettings/desiredVariance","32870596").toString());
     ui->agentNeeds_lineEdit->setText(settings.value("SimulationSettings/agentNeeds","10.5,9.7,9.1,8.9,8.6,8.7,8.9,9.4,10.7,11.8,12.1,12.2,12.1,11.8,11.7,11.7,12.2,13.4,12.9,12.8,12.6,12.4,11.7,10.9").toString());
     ui->resourcesStandardDeciations_lineEdit->setText(settings.value("SimulationSettings/standardDeviation","12,11.1,10.5,10.2,9.9,10,10.2,10.8,12.3,13.6,13.9,14.1,13.9,13.6,13.4,13.4,14.1,15.4,14.8,14.7,14.5,14.2,13.4,12.5").toString());
     ui->priorities_lineEdit->setText(settings.value("SimulationSettings/priorities","50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50").toString());
@@ -139,8 +139,6 @@ void Simulation::initializeHolarchy(int levels, int holons)
         root->deleteLater();
 
     root = new Agent(NULL);
-    root->setMaxFutileCycles(ui->maxCycles_lineEdit->text().toInt());
-    root->setDesiredVariance(ui->desiredVariance_lineEdit->text().toDouble());
 
     connect(root, &Agent::simulationFinished, this, &Simulation::onSimulationFinished);
     connect(root, &Agent::resultChanged, this, &Simulation::setResults);
@@ -177,7 +175,6 @@ void Simulation::initializeHolarchy(int levels, int holons)
     //Make Holarchy
     initializeHolon(root, holons, 0, levels);
 
-    root->setHorizontalInteraction(ui->horizontalInteractionChkBx->isChecked());
 }
 
 void Simulation::initializeHolon(Agent* parent, int holons, int level, int maxLevels)
@@ -250,6 +247,13 @@ double Simulation::getSatisfactionRate(Agent *agent)
 
 void Simulation::on_startBut_clicked()
 {
+
+    root->reset();
+
+    root->setMaxFutileCycles(ui->maxCycles_lineEdit->text().toInt());
+    root->setDesiredVariance(ui->desiredVariance_lineEdit->text().toDouble());
+    root->setHorizontalInteraction(ui->horizontalInteractionChkBx->isChecked());
+
     elapsedTimer.start();
 
     root->start();
@@ -320,13 +324,6 @@ void Simulation::onSimulationFinished()
     ui->satisfactionRate_lineEdit->setText(QString::number(satisfactionRate,'2',2));
 
     peakLoadPlotTimer.stop();
-
-    root->reset();
-
-    root->setMaxFutileCycles(ui->maxCycles_lineEdit->text().toInt());
-    root->setDesiredVariance(ui->desiredVariance_lineEdit->text().toDouble());
-    root->setHorizontalInteraction(ui->horizontalInteractionChkBx->isChecked());
-
 
     ui->stopBut->setEnabled(false);
     ui->startBut->setEnabled(true);

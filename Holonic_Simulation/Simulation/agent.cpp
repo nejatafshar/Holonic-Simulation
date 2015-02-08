@@ -213,9 +213,6 @@ void Agent::continueDownwards()
 
 
     //Deciding about permissions and sending results to children
-    //int resourceIndex = m_permission.indexOf(false);
-    //int agentIndex = getAgentWithMaxInPosition(resourceIndex, m_children);
-
     QVector<double> means;
     for(int i=0;i<ResourceElements;i++)
     {
@@ -263,12 +260,6 @@ void Agent::continueDownwards()
 
 void Agent::interactWithSiblings()
 {   
-
-//    double mean = statistics.getMean(m_priorities.data(), m_priorities.count());
-//    if(m_priorities[gettingIndex]<=mean)
-//        return;
-
-
     foreach(Agent * agent, m_parent->children())
     {
         if(agent!=this)
@@ -314,7 +305,6 @@ void Agent::interactWithSiblings()
 
 bool Agent::receiveSuggestFromSibling(int givingIndex,int gettingIndex)
 {
-//    double mean = statistics.getMean(m_priorities.data(), m_priorities.count());
     if((m_permission[gettingIndex]==false) && (m_priorities[givingIndex]<=m_priorities[gettingIndex]))
     {
         m_permission[givingIndex]=false;
