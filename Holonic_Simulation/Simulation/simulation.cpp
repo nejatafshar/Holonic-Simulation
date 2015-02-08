@@ -96,8 +96,6 @@ void Simulation::initializePlot()
 //        plot->xAxis->setLabelColor(QColor(225,225,225));
 //        plot->yAxis->setLabelColor(QColor(225,225,225));
 
-        plot->yAxis->setLabel("KW/h");
-
         plot->addGraph("",0,0,0);
 
         plot->graph()->setLineStyle(QCPGraph::lsLine);
