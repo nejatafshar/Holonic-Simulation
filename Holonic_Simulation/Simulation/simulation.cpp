@@ -28,7 +28,7 @@ Simulation::Simulation(QWidget *parent) :
     ui->agentNeeds_lineEdit->setText(settings.value("SimulationSettings/agentNeeds","10.5,9.7,9.1,8.9,8.6,8.7,8.9,9.4,10.7,11.8,12.1,12.2,12.1,11.8,11.7,11.7,12.2,13.4,12.9,12.8,12.6,12.4,11.7,10.9").toString());
     ui->resourcesStandardDeciations_lineEdit->setText(settings.value("SimulationSettings/standardDeviation","12,11.1,10.5,10.2,9.9,10,10.2,10.8,12.3,13.6,13.9,14.1,13.9,13.6,13.4,13.4,14.1,15.4,14.8,14.7,14.5,14.2,13.4,12.5").toString());
     ui->priorities_lineEdit->setText(settings.value("SimulationSettings/priorities","50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50").toString());
-    ui->prioritiesStandardDeciations_lineEdit->setText(settings.value("SimulationSettings/prioritiesStandardDeviation","4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4").toString());
+    ui->prioritiesStandardDeciations_lineEdit->setText(settings.value("SimulationSettings/prioritiesStandardDeviation","2,4,3,4,5,4,3,2,3,1,4,5,2,2,3,4,2,1,2,4,5,3,4,2").toString());
 
     initializePlot();
 
