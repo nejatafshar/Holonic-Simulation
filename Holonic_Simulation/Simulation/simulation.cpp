@@ -265,10 +265,6 @@ void Simulation::on_startBut_clicked()
 void Simulation::on_stopBut_clicked()
 {
     root->setStopped(true);
-
-    ui->stopBut->setEnabled(false);
-    ui->startBut->setEnabled(false);
-    ui->initializeHolarchyBut->setEnabled(true);
 }
 
 void Simulation::on_initializeHolarchyBut_clicked()
@@ -325,8 +321,16 @@ void Simulation::onSimulationFinished()
 
     peakLoadPlotTimer.stop();
 
-    if(ui->stopBut->isEnabled())
-        on_stopBut_clicked();
+    root->reset();
+
+    root->setMaxFutileCycles(ui->maxCycles_lineEdit->text().toInt());
+    root->setDesiredVariance(ui->desiredVariance_lineEdit->text().toDouble());
+    root->setHorizontalInteraction(ui->horizontalInteractionChkBx->isChecked());
+
+
+    ui->stopBut->setEnabled(false);
+    ui->startBut->setEnabled(true);
+    ui->initializeHolarchyBut->setEnabled(true);
 }
 
 void Simulation::setResults(QVector<double> peakLoads, double variance, int verticalCycles)

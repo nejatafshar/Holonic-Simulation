@@ -74,6 +74,33 @@ void Agent::start()
     }
 }
 
+void Agent::reset()
+{
+
+    m_receivedSuggestionsFromChilds =0;
+
+    m_maxFutileCycles = 0;
+    m_desiredVariance = 0;
+    m_bestVariance = INT_MAX;
+    m_stopped = false;
+    m_verticalCycles = 0;
+    m_futileCycles = 0;
+
+    if(m_children.isEmpty())
+        setResources(m_primaryResources);
+    else
+    {
+        for(int i=0;i<ResourceElements;i++)
+        {
+            m_resources[i]=0;
+            m_priorities[i]=0;
+        }
+
+        foreach(Agent * agent, m_children)
+            agent->reset();
+    }
+}
+
 void Agent::receiveSuggestFromChild(QVector<double> resources, QVector<double> priorities)
 {
     m_receivedSuggestionsFromChilds++;
@@ -115,6 +142,7 @@ void Agent::receiveSuggestFromChild(QVector<double> resources, QVector<double> p
             if(variance<=m_desiredVariance || m_stopped || m_futileCycles>=m_maxFutileCycles)
             {
                 m_stopped = false;
+
                 emit simulationFinished();
             }
             else
@@ -281,10 +309,10 @@ bool Agent::receiveSuggestFromSibling(int givingIndex,int gettingIndex)
 
     Statistics s;
     double mean = s.getMean(m_priorities.data(), m_priorities.count());
-    if(m_priorities[givingIndex]<=m_priorities[gettingIndex])
+    if((m_permission[gettingIndex]==false) && (m_priorities[givingIndex]<=m_priorities[gettingIndex]))
     {
-        m_priorities[givingIndex]=false;
-        m_priorities[gettingIndex]=true;
+        m_permission[givingIndex]=false;
+        m_permission[gettingIndex]=true;
 
         return true;
     }
@@ -321,7 +349,7 @@ void Agent::shiftResource(int givingIndex)
         }
         else if((givingIndex+diff)>=ResourceElements && (givingIndex-diff)<0)
         {
-            m_resources[(((double)qrand())/((double)RAND_MAX))*ResourceElements]+=exchangeAmount;
+            m_resources[(((double)qrand()-1.0)/((double)RAND_MAX))*ResourceElements]+=exchangeAmount;
             break;
         }
         diff++;
@@ -367,7 +395,7 @@ void Agent::setHorizontalInteraction(bool horizontalInteraction)
     m_horizontalInteraction = horizontalInteraction;
 
     foreach(Agent * agent, m_children)
-        agent->setHorizontalInteraction(false);
+        agent->setHorizontalInteraction(horizontalInteraction);
 }
 
 bool Agent::stopped() const
