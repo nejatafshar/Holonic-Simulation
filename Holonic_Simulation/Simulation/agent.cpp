@@ -298,17 +298,8 @@ void Agent::interactWithSiblings()
 
 bool Agent::receiveSuggestFromSibling(int givingIndex,int gettingIndex)
 {
-//    QVector<double>::iterator it = std::max_element(m_priorities.begin(), m_priorities.end());
-//    double maxPriorityValue = *it;
-//    int maxPriorityIndex = m_priorities.indexOf(maxPriorityValue);
-
-//    if(maxPriorityIndex==gettingIndex)
-//        return true;
-//    else
-//        return false;
-
-    Statistics s;
-    double mean = s.getMean(m_priorities.data(), m_priorities.count());
+//    Statistics s;
+//    double mean = s.getMean(m_priorities.data(), m_priorities.count());
     if((m_permission[gettingIndex]==false) && (m_priorities[givingIndex]<=m_priorities[gettingIndex]))
     {
         m_permission[givingIndex]=false;
