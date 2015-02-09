@@ -37,6 +37,8 @@ Simulation::Simulation(QWidget *parent) :
     {
         ui->peakLoadPlot->holdMaxScale = !checked;
         ui->peakLoadPlot->holdMinScale = !checked;
+
+        ui->peakLoadPlot->rescalePlot();
     });
     rescaleChkBx.setChecked(false);
     ui->peakLoadPlot->layout->addWidget(&rescaleChkBx, 0, 3, 1, 1);
