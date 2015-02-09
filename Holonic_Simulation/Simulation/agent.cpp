@@ -349,12 +349,12 @@ void Agent::shiftResource(int givingIndex)
             diff=1;
             while(true)
             {
-                if( ((givingIndex+diff)<ResourceElements) && (m_resources[givingIndex+diff]<m_resources[givingIndex]) && (m_priorities[givingIndex+diff]>m_priorities[givingIndex]) )
+                if( ((givingIndex+diff)<ResourceElements) && (m_resources[givingIndex+diff]<m_resources[givingIndex]) )
                 {
                     m_resources[givingIndex+diff]+=exchangeAmount;
                     break;
                 }
-                else if( ((givingIndex-diff)>=0) && (m_resources[givingIndex-diff]<m_resources[givingIndex]) && (m_priorities[givingIndex-diff]>m_priorities[givingIndex]) )
+                else if( ((givingIndex-diff)>=0) && (m_resources[givingIndex-diff]<m_resources[givingIndex]) )
                 {
                     m_resources[givingIndex-diff]+=exchangeAmount;
                     break;
