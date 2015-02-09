@@ -58,6 +58,8 @@ private:
 
     double getSatisfactionRate(Agent* agent);
 
+    void moveAgentToTread(QThread* thread, Agent* agent);
+
 
 private:
      Ui::Simulation *ui;

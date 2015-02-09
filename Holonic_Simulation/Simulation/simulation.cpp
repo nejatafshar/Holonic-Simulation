@@ -73,6 +73,10 @@ Simulation::~Simulation()
     settings.setValue("peakLoadPlot/lineStyle",ui->peakLoadPlot->graph(0)->lineStyle());
     settings.setValue("peakLoadPlot/pointStyle",ui->peakLoadPlot->graph(0)->scatterStyle().shape());
 
+
+    if(root)
+        root->deleteLater();
+
     delete ui;
 }
 
@@ -243,6 +247,13 @@ double Simulation::getSatisfactionRate(Agent *agent)
     }
 }
 
+void Simulation::moveAgentToTread(QThread *thread, Agent *agent)
+{
+    agent->moveToThread(thread);
+    foreach(Agent * a,agent->children())
+        moveAgentToTread(thread, a);
+}
+
 void Simulation::on_startBut_clicked()
 {
 
@@ -255,6 +266,10 @@ void Simulation::on_startBut_clicked()
     elapsedTimer.start();
 
     root->start();
+
+    QThread * thread = new QThread();
+    moveAgentToTread(thread, root);
+    thread->start();
 
     peakLoadPlotTimer.start();
 
