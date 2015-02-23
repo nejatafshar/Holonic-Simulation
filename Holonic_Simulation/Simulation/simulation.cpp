@@ -269,9 +269,12 @@ void Simulation::on_startBut_clicked()
 
     root->start();
 
-    QThread * thread = new QThread();
-    moveAgentToTread(thread, root);
-    thread->start();
+    if(root->thread()==this->thread())
+    {
+        QThread * thread = new QThread();
+        moveAgentToTread(thread, root);
+        thread->start();
+    }
 
     peakLoadPlotTimer.start();
 
