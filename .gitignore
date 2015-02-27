@@ -27,4 +27,8 @@ Makefile
 *.ini
 *.autosave
 adcSetting.bin
+build-Holonic_Simulation-Desktop-Release/
+build-Holonic_Simulation-Desktop-Debug/
+build-Holonic_Simulation-Android-Release/
+build-Holonic_Simulation-Android-Debug/
 
