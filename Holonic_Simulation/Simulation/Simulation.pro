@@ -42,7 +42,7 @@ else:linux:!android:CONFIG(release, debug|release): QMAKE_POST_LINK += $$quote(c
 
 
 #cause the dynamic linker to look in the same directory as my Qt application at runtime in Linux
-unix:{
+unix:!android:{
     # suppress the default RPATH if you wish
     QMAKE_LFLAGS_RPATH=
     # add your own with quoting gyrations to make sure $ORIGIN gets to the command line unexpanded
