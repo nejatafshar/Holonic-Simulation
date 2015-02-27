@@ -13,6 +13,10 @@
   <property name="windowTitle">
    <string>Holonic Simulation</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="resources.qrc">
+    <normaloff>:/Holonic.ico</normaloff>:/Holonic.ico</iconset>
+  </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QGridLayout" name="gridLayout">
     <property name="leftMargin">
@@ -41,7 +45,7 @@
      <x>0</x>
      <y>0</y>
      <width>675</width>
-     <height>21</height>
+     <height>20</height>
     </rect>
    </property>
   </widget>
@@ -64,6 +68,8 @@
    <container>1</container>
   </customwidget>
  </customwidgets>
- <resources/>
+ <resources>
+  <include location="resources.qrc"/>
+ </resources>
  <connections/>
 </ui>

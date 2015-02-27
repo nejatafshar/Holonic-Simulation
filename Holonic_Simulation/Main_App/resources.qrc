@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/">
+        <file>Holonic.ico</file>
+    </qresource>
+</RCC>

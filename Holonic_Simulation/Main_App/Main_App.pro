@@ -58,3 +58,6 @@ else:unix: LIBS += -L$$OUT_PWD/../CustomPlot/ -lCustomPlot
 INCLUDEPATH += $$PWD/../CustomPlot
 DEPENDPATH += $$PWD/../CustomPlot
 
+RESOURCES += \
+    resources.qrc
+

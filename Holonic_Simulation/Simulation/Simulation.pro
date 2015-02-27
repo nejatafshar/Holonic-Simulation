@@ -33,9 +33,6 @@ unix:!symbian {
     INSTALLS += target
 }
 
-RESOURCES += \
-    Simulation_resources.qrc
-
 FORMS += \
     Simulation.ui
 
