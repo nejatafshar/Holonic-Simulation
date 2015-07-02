@@ -48,6 +48,8 @@ private slots:
 
     void on_horizontalInteractionChkBx_toggled(bool checked);
 
+    void on_varianceChangeCheckBox_toggled(bool checked);
+
 private:
 
     void initializePlot();

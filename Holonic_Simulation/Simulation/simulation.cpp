@@ -258,7 +258,6 @@ void Simulation::moveAgentToTread(QThread *thread, Agent *agent)
 
 void Simulation::on_startBut_clicked()
 {
-
     root->reset();
 
     root->setMaxFutileCycles(ui->maxCycles_lineEdit->text().toInt());
@@ -291,6 +290,8 @@ void Simulation::on_stopBut_clicked()
 
 void Simulation::on_initializeHolarchyBut_clicked()
 {
+    ui->varianceChange_lineEdit->setText("");
+
     int levels = ui->levels_lineEdit->text().toInt();
     int holons = ui->holons_lineEdit->text().toInt();
 
@@ -353,6 +354,9 @@ void Simulation::setResults(QVector<double> peakLoads, double variance, int vert
     this->peakLoads = peakLoads;
     this->variance = variance;
     this->verticalCycles = verticalCycles;
+
+    if(ui->varianceChangeCheckBox->isChecked())
+        ui->varianceChange_lineEdit->setText(ui->varianceChange_lineEdit->text().append(QString::number(variance,'f',0)).append(","));
 }
 
 void Simulation::updateResults()
@@ -397,4 +401,9 @@ void Simulation::on_horizontalInteractionChkBx_toggled(bool checked)
 {
     if(root)
         root->setHorizontalInteraction(checked);
+}
+
+void Simulation::on_varianceChangeCheckBox_toggled(bool checked)
+{
+    ui->varianceChange_lineEdit->setEnabled(checked);
 }
